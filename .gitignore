@@ -1,0 +1,13 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+server/data/bookings.json
+server/data/clinic.db
+server/data/clinic.db-wal
+server/data/clinic.db-shm
+server/data/backups/

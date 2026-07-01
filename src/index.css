@@ -1,0 +1,142 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=LXGW+WenKai&family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  /* 品牌四色 */
+  --color-brand-gold: #FDD772;
+  --color-brand-gold-muted: #E8C050;
+  --color-brand-navy: #10143A;
+  --color-brand-pink: #FBD7DE;
+  --color-brand-sky: #DEEAF4;
+  /* 别名（与上统一，便于旧类名） */
+  --color-sign-gold: #FDD772;
+  --color-hero-gold: #FDD772;
+  --color-hero-gold-dark: #E8C050;
+  --color-sign-gold-dark: #10143A;
+  --color-hero-navy: #10143A;
+  --color-sign-navy: #10143A;
+  --color-sign-pink: #FBD7DE;
+  --color-nav-bg: #DEEAF4;
+  --color-nav-link: #10143A;
+  --color-warm-bg: #FAF8F5;
+  --font-serif: "Noto Serif SC", Georgia, serif;
+  --font-sans: "Noto Sans SC", "Inter", sans-serif;
+  --font-hero-classical: "Ma Shan Zheng", "Noto Serif SC", serif;
+  --font-hero-motto: "LXGW WenKai", "Noto Serif SC", serif;
+}
+
+.font-hero-classical {
+  font-family: var(--font-hero-classical);
+}
+
+.font-hero-motto {
+  font-family: var(--font-hero-motto);
+}
+
+:root {
+  --header-height: 88px;
+  --header-gap: 50px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* 招牌回纹装饰线 */
+.pattern-border-top {
+  background-image: url("data:image/svg+xml,%3Csvg width='40' height='8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 4h8l4-4 4 4h8l4-4 4 4h8' stroke='%23FDD772' fill='none' opacity='0.4'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-position: top;
+  height: 8px;
+}
+
+@keyframes key-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 12px rgba(253, 215, 114, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 28px rgba(253, 215, 114, 0.55);
+  }
+}
+
+.animate-glow {
+  animation: key-glow 3s infinite ease-in-out;
+}
+
+@keyframes gentle-float {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.85;
+  }
+  50% {
+    transform: translateY(5px);
+    opacity: 1;
+  }
+}
+
+@keyframes queue-number-pulse {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  35% {
+    transform: scale(1.06);
+    filter: brightness(1.15);
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+.queue-number-pulse {
+  animation: queue-number-pulse 0.85s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .queue-number-pulse {
+    animation: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .backdrop-blur-md,
+  .backdrop-blur-lg {
+    backdrop-filter: none !important;
+  }
+}
+
+/** 品牌金文字（中/英）+ 2px 深色描边 */
+.text-gold {
+  color: var(--color-brand-gold);
+  -webkit-text-stroke: 2px var(--color-brand-navy);
+  paint-order: stroke fill;
+}
+
+/** 深蓝底上的金字：不加描边 */
+.text-gold-on-dark {
+  color: var(--color-brand-gold);
+  -webkit-text-stroke: 0;
+}
+
+/** 金色图标 / emoji：仅上色，不加描边 */
+.icon-gold,
+.gold-emoji {
+  color: var(--color-brand-gold);
+  -webkit-text-stroke: 0;
+  filter: none;
+}
+
+/** 位于 .text-gold 内的 emoji / 符号，取消继承描边 */
+.text-gold .gold-emoji {
+  -webkit-text-stroke: 0;
+  paint-order: initial;
+}

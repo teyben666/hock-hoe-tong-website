@@ -1,0 +1,41 @@
+[
+  {
+    "id": "w1",
+    "tagZh": "时令养生",
+    "tagEn": "Seasonal Wellness",
+    "titleZh": "雨季祛湿与脾胃",
+    "titleEn": "Damp Season & Digestive Balance",
+    "bodyZh": "马来西亚多雨潮湿，易出现疲倦、胃口差、肢体困重。日常宜少生冷油腻，可适量薏米、赤小豆、茯苓等配伍（需据体质）。若久湿不解或伴明显不适，宜请医师舌脉辨证，勿自行长期猛用苦寒祛湿方。",
+    "bodyEn": "Humid weather may bring fatigue, poor appetite, or heaviness. Prefer warm, light meals; herbal combinations such as coix seed or poria should suit your constitution. Persistent symptoms warrant a TCM consultation—avoid long-term aggressive “damp-clearing” formulas on your own.",
+    "sortOrder": 0,
+    "enabled": true,
+    "createdAt": "2026-05-24T00:00:00.000Z",
+    "updatedAt": "2026-05-25T01:39:40.354Z"
+  },
+  {
+    "id": "w2",
+    "tagZh": "茶饮常识",
+    "tagEn": "Herbal Drinks",
+    "titleZh": "凉茶与养生茶饮怎么选",
+    "titleEn": "Choosing Herbal Teas Wisely",
+    "bodyZh": "本店有杂凉茶、夏桑菊、罗汉果菊等，多作清热生津、日常调理之用，不能替代中药汤剂治疗。儿童、孕妇、脾胃虚寒或正在服药者，选购前宜咨询店员或医师。症状持续或加重，请预约面诊。",
+    "bodyEn": "Shop teas such as herbal cooling blends are for daily wellness, not a substitute for prescribed decoctions. Children, pregnant clients, those with cold sensitivity, or on medication should ask staff or the physician first. Worsening symptoms—please book a visit.",
+    "sortOrder": 1,
+    "enabled": true,
+    "createdAt": "2026-05-24T00:00:00.000Z",
+    "updatedAt": "2026-05-25T01:39:40.354Z"
+  },
+  {
+    "id": "w3",
+    "tagZh": "儿科养护",
+    "tagEn": "Paediatric Care",
+    "titleZh": "小儿推拿与居家养护",
+    "titleEn": "Paediatric Tuina & Home Care",
+    "bodyZh": "小儿推拿常用于健脾、助眠、增强抵抗力等，手法需专业、力度宜轻。居家可注意规律作息、饮食清淡，避免过饱过凉。发热、抽搐、精神差等急症，请立即就医，不宜仅依赖推拿延误诊治。",
+    "bodyEn": "Paediatric tuina supports digestion, sleep, and resilience when performed by trained hands with gentle pressure. At home: regular routines and mild meals. Fever, convulsions, or lethargy need emergency care—do not delay medical help relying on tuina alone.",
+    "sortOrder": 2,
+    "enabled": true,
+    "createdAt": "2026-05-24T00:00:00.000Z",
+    "updatedAt": "2026-05-25T01:39:40.354Z"
+  }
+]

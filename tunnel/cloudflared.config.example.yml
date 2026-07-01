@@ -1,0 +1,14 @@
+# Cloudflare Tunnel 示例 — 复制为 cloudflared.config.yml 并填入你的 tunnel ID
+# 文档: https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/
+#
+# 1. cloudflared tunnel create hockhoetong
+# 2. 在 Cloudflare DNS 把 hockhoetong.dpdns.org（或你的域名）CNAME 到 <tunnel-id>.cfargotunnel.com
+# 3. credentials-file 指向 ~/.cloudflared/<tunnel-id>.json
+
+tunnel: YOUR_TUNNEL_ID
+credentials-file: C:\Users\YOUR_USER\.cloudflared\YOUR_TUNNEL_ID.json
+
+ingress:
+  - hostname: hockhoetong.dpdns.org
+    service: http://127.0.0.1:3001
+  - service: http_status:404
