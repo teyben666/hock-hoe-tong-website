@@ -18,10 +18,10 @@ export const DEFAULTS = {
   CLINIC_MALAY: 'KEDAI UBAT CINA',
   ESTABLISHED: '1987',
   ESTABLISHED_LABEL: 'Since 1987',
-  HOURS: '每天 9:00 AM – 8:00 PM',
-  HOURS_EN: 'Daily: 9:00 AM – 8:00 PM',
-  SHOP_HOURS: '9am-8pm',
-  TCM_HOURS: '10am-2pm；3pm-7.30pm',
+  HOURS: '每天 9:30 AM – 7:30 PM',
+  HOURS_EN: 'Daily: 9:30 AM – 7:30 PM',
+  SHOP_HOURS: '9:30am-7:30pm',
+  TCM_HOURS: '10am-7:30pm',
   REST_DAYS:
     '周三&周四（2周1次）Closed on Wednesday & Thursday BIWEEKLY',
   MAIN_BUSINESS: '药材零售/中医诊疗/健康咨询',
@@ -38,9 +38,6 @@ export const DEFAULTS = {
     '三十余载诚信经营，甄选优质人参、冬虫草、枸杞、红枣等中草药，传承中医药文化，守护大众健康。',
   HERO_CREDENTIAL: '上海中医药大学硕士 • 马来西亚合法注册中医师',
   HERO_CLOSING: '专业医师亲诊，传承岐黄智慧，精诚守护大众健康。',
-  /** 小红书主页（在 .env.local 配置 VITE_XIAOHONGSHU_URL） */
-  XIAOHONGSHU_URL: import.meta.env.VITE_XIAOHONGSHU_URL || '',
-  EMAIL: import.meta.env.VITE_CLINIC_EMAIL || 'hockhoetong1987@gmail.com',
   COPYRIGHT_YEAR: '1987',
 };
 
@@ -51,10 +48,9 @@ export const HERO_CAPSULES = [
   { label: '道地药材', tip: '精选饮片，严控品质' },
 ];
 
-/** 中医门诊可预约窗口（每格 20 分钟） */
+/** 中医门诊可预约窗口（每格 20 分钟；午休不定时，由后台「时段休息」临时关闭） */
 export const TCM_CONSULT_WINDOWS = [
-  { start: '10:00', end: '14:00' },
-  { start: '15:00', end: '19:30' },
+  { start: '10:00', end: '19:30' },
 ] as const;
 
 export const SLOT_INTERVAL_MIN = 20;
@@ -69,9 +65,9 @@ export const BOOKING_COPY = {
     bookSlotEn: 'Book an Appointment',
     phoneBookZh: '电话 / WhatsApp 预约（推荐长辈）',
     phoneBookEn: 'Phone / WhatsApp Booking (Recommended for Seniors)',
-    slotRulesZh: '每20分钟仅接待1人 · 10:00 AM–2:00 PM & 3:00 PM–7:30 PM',
+    slotRulesZh: '每20分钟仅接待1人 · 门诊 10:00 AM–7:30 PM',
     slotRulesEn:
-      'One patient every 20 minutes · Consultation: 10:00 AM–2:00 PM & 3:00 PM–7:30 PM',
+      'One patient every 20 minutes · Consultation: 10:00 AM–7:30 PM',
   },
   senior: {
     titleZh: '长辈专属电话预约',
@@ -95,8 +91,8 @@ export const BOOKING_COPY = {
         en: 'One patient every 20 minutes',
       },
       {
-        zh: '10:00 AM–2:00 PM & 3:00 PM–7:30 PM',
-        en: 'Consultation hours: 10:00 AM–2:00 PM & 3:00 PM–7:30 PM',
+        zh: '门诊时间 10:00 AM–7:30 PM（午休不定时，以当日可约时段为准）',
+        en: 'Consultation: 10:00 AM–7:30 PM (lunch break varies; see available slots)',
       },
       {
         zh: '每两周的周三与周四休息',
@@ -115,8 +111,8 @@ export const BOOKING_COPY = {
       '如您对治疗方案、收费或药材零售有任何疑问，除了自助预约外，亦可直接通过电话客服与我们联系。',
     bodyEn:
       'If you have any questions regarding treatment plans, fees, or herbal retail, you may contact our customer service hotline directly in addition to using the self-service booking system.',
-    hoursZh: '每天 9:00 AM – 8:00 PM',
-    hoursEn: 'Daily: 9:00 AM – 8:00 PM',
+    hoursZh: '中药店每天 9:30 AM – 7:30 PM；门诊 10:00 AM – 7:30 PM',
+    hoursEn: 'Shop daily 9:30 AM – 7:30 PM; Consultation 10:00 AM – 7:30 PM',
     restZh: '每两周的周三与周四休息',
     restEn: 'Closed every other Wednesday & Thursday',
     callZh: '拨号',
@@ -389,10 +385,10 @@ export const ABOUT_COPY = {
     titleEn: 'Business Hours',
     shopZh: '中药店营业时间',
     shopEn: 'Chinese Medicine Shop Hours',
-    shopValue: '9am-8pm',
+    shopValue: '9:30am-7:30pm',
     tcmZh: '中医门诊时间',
     tcmEn: 'TCM Consultation Hours',
-    tcmValue: '10am-2pm；3pm-7.30pm',
+    tcmValue: '10am-7:30pm',
     restZh: '休息日',
     restValue: '周三&周四（2周1次）',
     restEn: 'Closed on Wednesday & Thursday BIWEEKLY',
@@ -472,7 +468,7 @@ export const DOCTORS: Doctor[] = [
       '擅长脉诊、舌诊四诊合参，专注体质调理、经络养护与一人一方中药配伍。问诊细致耐心，注重从饮食起居与情志调摄入手，帮助患者建立可持续的康养习惯。',
     specialties: ['中医全科', '内科', '外科', '妇科', '男科', '儿科', '杂病'],
     treatmentPlans: ['中药', '针刺', '艾灸', '拔罐', '小儿推拿', '颐玥臻膳'],
-    schedule: ['每天：10:00 AM – 2:00 PM；3:00 PM – 7:30 PM'],
+    schedule: ['每天：10:00 AM – 7:30 PM'],
     restDays: '每两周的周三与周四',
     rating: 5,
   },
@@ -491,7 +487,4 @@ export const WELLNESS_SECTION = {
   intro:
     '以下内容仅供日常养生参考，不替代医师诊断与治疗；用药与针灸方案须经面诊后个体化制定。',
   disclaimer: '体质有别，若有不适或症状持续，请预约面诊辨证调理。',
-  moreZh: '更多日常分享见',
-  xhsLabel: '小红书主页',
-  xhsButton: '更多分享（小红书）',
 } as const;

@@ -6,7 +6,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Logo } from './Logo';
 import { BOOKING_COPY, DEFAULTS } from '../data';
-import { Phone, CalendarCheck2, Menu, X, ExternalLink, Mail } from 'lucide-react';
+import { Phone, CalendarCheck2, Menu, X } from 'lucide-react';
 
 /** 顶栏配色：浅蓝底 #DEEAF4 + 导航字 #10143A */
 const NAV_BG = '#DEEAF4';
@@ -185,25 +185,6 @@ export const Navbar: React.FC = () => {
         </nav>
 
         <div className="flex items-center justify-end gap-1.5 2xl:gap-2 shrink-0">
-          {DEFAULTS.XIAOHONGSHU_URL ? (
-            <a
-              href={DEFAULTS.XIAOHONGSHU_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1 text-sm font-sans text-[#10143A] px-1 2xl:px-2 py-1 hover:opacity-75 transition-colors whitespace-nowrap"
-              aria-label="小红书"
-            >
-              <ExternalLink size={15} />
-              <span className="hidden 2xl:inline">小红书</span>
-            </a>
-          ) : null}
-          <a
-            href={`mailto:${DEFAULTS.EMAIL}`}
-            className="hidden 2xl:flex items-center gap-1 px-1 text-[#10143A] hover:opacity-75 transition-colors shrink-0"
-            aria-label="邮箱"
-          >
-            <Mail size={15} />
-          </a>
           <BilingualPinkBtn
             href={telHref}
             zh={BOOKING_COPY.hero.phoneBookZh}
@@ -268,17 +249,6 @@ export const Navbar: React.FC = () => {
               {BOOKING_COPY.senior.subtitleEn}
             </span>
           </p>
-          {DEFAULTS.XIAOHONGSHU_URL ? (
-            <a
-              href={DEFAULTS.XIAOHONGSHU_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 py-3 rounded-xl border border-[#10143A]/40 text-[#10143A] font-serif"
-            >
-              <ExternalLink size={16} />
-              小红书
-            </a>
-          ) : null}
           {NAV_LINKS.map((item) => (
             <React.Fragment key={item.id}>
               <BilingualNavLink

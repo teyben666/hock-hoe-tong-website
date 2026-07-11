@@ -1,5 +1,6 @@
 /**
- * Generate 20-minute TCM consult slots (10:00–14:00, 15:00–19:30)
+ * Generate 20-minute TCM consult slots (10:00–19:30 continuous).
+ * Irregular lunch breaks are closed via admin「时段休息」partial blocks.
  */
 
 import { getBookingsByDate } from './db.js';
@@ -7,8 +8,7 @@ import { isFullOffDay, isSlotClosed, hasPartialClosure } from './scheduleConfig.
 import { isSlotPast } from './clinicTime.js';
 
 const TCM_WINDOWS = [
-  { start: '10:00', end: '14:00' },
-  { start: '15:00', end: '19:30' },
+  { start: '10:00', end: '19:30' },
 ] as const;
 const INTERVAL = 20;
 

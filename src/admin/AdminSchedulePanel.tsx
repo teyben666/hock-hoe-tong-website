@@ -207,7 +207,7 @@ export const AdminSchedulePanel: React.FC<AdminSchedulePanelProps> = ({ onSaved 
           时段休息（几小时）
         </h3>
         <p className="text-xs text-stone-500">
-          例如午休 12:00–14:00：该时段内所有预约格显示「休息」，其余时段仍可约。
+          午休不定时：可用「时段休息」临时关闭（如 12:00–14:00），该时段预约格显示「休息」，其余时段仍可约。
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">

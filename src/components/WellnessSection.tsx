@@ -3,8 +3,8 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight, ExternalLink, Leaf } from 'lucide-react';
-import { DEFAULTS, WELLNESS_SECTION } from '../data';
+import { ChevronLeft, ChevronRight, Leaf } from 'lucide-react';
+import { WELLNESS_SECTION } from '../data';
 import { fetchWellnessTips } from '../api';
 import { BilingualLine } from './BilingualLine';
 import type { WellnessTip } from '../types';
@@ -12,7 +12,6 @@ import type { WellnessTip } from '../types';
 const AUTO_MS = 30_000;
 
 export const WellnessSection: React.FC = () => {
-  const hasXhs = Boolean(DEFAULTS.XIAOHONGSHU_URL?.trim());
   const [tips, setTips] = useState<WellnessTip[]>([]);
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -59,21 +58,6 @@ export const WellnessSection: React.FC = () => {
 
       <p className="font-sans text-sm text-stone-500 leading-relaxed">
         {WELLNESS_SECTION.intro}
-        {hasXhs && (
-          <>
-            {' '}
-            {WELLNESS_SECTION.moreZh}{' '}
-            <a
-              href={DEFAULTS.XIAOHONGSHU_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[#10143A] font-medium underline underline-offset-2 hover:text-gold"
-            >
-              {WELLNESS_SECTION.xhsLabel}
-            </a>
-            。
-          </>
-        )}
       </p>
 
       {loading ? (
@@ -156,26 +140,6 @@ export const WellnessSection: React.FC = () => {
           )}
         </div>
       )}
-
-      <div className="flex flex-col sm:flex-row gap-3 pt-2">
-        {hasXhs ? (
-          <a
-            href={DEFAULTS.XIAOHONGSHU_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#FBD7DE] hover:bg-[#f5c0c8] text-[#10143A] font-serif font-semibold text-sm transition-colors shadow-sm"
-          >
-            <ExternalLink size={16} />
-            {WELLNESS_SECTION.xhsButton}
-          </a>
-        ) : null}
-        <a
-          href={`mailto:${DEFAULTS.EMAIL}?subject=${encodeURIComponent(`${DEFAULTS.CLINIC_NAME} 就诊咨询`)}`}
-          className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl border-2 border-[#10143A]/20 text-[#10143A] hover:bg-[#DEEAF4]/50 font-serif text-sm transition-colors"
-        >
-          邮件联系我们
-        </a>
-      </div>
     </div>
   );
 };

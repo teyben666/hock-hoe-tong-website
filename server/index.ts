@@ -36,7 +36,7 @@ app.get('/api/config', (_req, res) => {
     clinicMalay: 'KEDAI UBAT CINA',
     established: '1987',
     phone: process.env.CLINIC_PHONE || '013-6268626',
-    hours: '每天 9:00 AM – 8:00 PM',
+    hours: '中药店每天 9:30 AM – 7:30 PM；门诊 10:00 AM – 7:30 PM',
     slogan: '辨证施治，一人一方',
     slotIntervalMinutes: 20,
     maxVisitors: 4,

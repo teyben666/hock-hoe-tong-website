@@ -270,27 +270,8 @@ export default function App() {
           <div className="space-y-3">
             <span className="font-serif text-sm text-stone-300 tracking-wider block">联系我们</span>
             <div className="flex flex-col gap-2 font-sans text-stone-500 text-[11px]">
-              {DEFAULTS.XIAOHONGSHU_URL ? (
-                <a
-                  href={DEFAULTS.XIAOHONGSHU_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-gold transition-colors"
-                >
-                  小红书
-                </a>
-              ) : null}
               <p>
-                <span className="text-stone-400">邮箱 Email：</span>
-                <a
-                  href={`mailto:${DEFAULTS.EMAIL}`}
-                  className="hover:text-gold transition-colors break-all"
-                >
-                  {DEFAULTS.EMAIL}
-                </a>
-              </p>
-              <p>
-                <span className="text-stone-400">电话 Contact Number：</span>
+                <span className="text-stone-400">电话 / WhatsApp：</span>
                 <a
                   href={DEFAULTS.WHATSAPP_URL}
                   target="_blank"
