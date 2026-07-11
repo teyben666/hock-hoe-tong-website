@@ -38,6 +38,7 @@ export const DEFAULTS = {
     '三十余载诚信经营，甄选优质人参、冬虫草、枸杞、红枣等中草药，传承中医药文化，守护大众健康。',
   HERO_CREDENTIAL: '上海中医药大学硕士 • 马来西亚合法注册中医师',
   HERO_CLOSING: '专业医师亲诊，传承岐黄智慧，精诚守护大众健康。',
+  EMAIL: import.meta.env.VITE_CLINIC_EMAIL || 'hockhoetong1987@gmail.com',
   COPYRIGHT_YEAR: '1987',
 };
 

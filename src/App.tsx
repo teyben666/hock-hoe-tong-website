@@ -281,6 +281,15 @@ export default function App() {
                   {DEFAULTS.PHONE_NUMBER}
                 </a>
               </p>
+              <p>
+                <span className="text-stone-400">邮箱 Email：</span>
+                <a
+                  href={`mailto:${DEFAULTS.EMAIL}`}
+                  className="hover:text-gold transition-colors break-all"
+                >
+                  {DEFAULTS.EMAIL}
+                </a>
+              </p>
             </div>
           </div>
 
