@@ -17,6 +17,8 @@ import { getCorsOptions, corsOriginsLabel } from './corsConfig.js';
 import { createWalkIn, getQueueBoard, getQueueStatusByPhone } from './queue.js';
 import { parsePatientIdentity } from './patientValidation.js';
 import { getPublicWellnessTips } from './wellnessTips.js';
+import { getPublicAboutGallery } from './aboutGallery.js';
+import { getPublicTreatments } from './treatments.js';
 import { attachStaticSite, shouldServeStatic } from './serveStatic.js';
 import { UPLOADS_ROOT } from './wellnessUpload.js';
 
@@ -73,6 +75,14 @@ app.get('/api/slots/range', (req, res) => {
 
 app.get('/api/wellness', (_req, res) => {
   res.json({ tips: getPublicWellnessTips() });
+});
+
+app.get('/api/about-gallery', (_req, res) => {
+  res.json({ items: getPublicAboutGallery() });
+});
+
+app.get('/api/treatments', (_req, res) => {
+  res.json({ treatments: getPublicTreatments() });
 });
 
 app.get('/api/queue/today', (_req, res) => {

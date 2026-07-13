@@ -8,6 +8,8 @@ import {
   Reservation,
   SlotAvailability,
   WellnessTip,
+  Treatment,
+  AboutGalleryItem,
 } from './types';
 
 const API_BASE = import.meta.env.VITE_API_URL || '';
@@ -55,6 +57,16 @@ export async function cancelBooking(id: string): Promise<void> {
 export async function fetchWellnessTips(): Promise<WellnessTip[]> {
   const data = await request<{ tips: WellnessTip[] }>('/api/wellness');
   return data.tips;
+}
+
+export async function fetchAboutGallery(): Promise<AboutGalleryItem[]> {
+  const data = await request<{ items: AboutGalleryItem[] }>('/api/about-gallery');
+  return data.items;
+}
+
+export async function fetchTreatments(): Promise<Treatment[]> {
+  const data = await request<{ treatments: Treatment[] }>('/api/treatments');
+  return data.treatments;
 }
 
 export async function fetchQueueBoard(): Promise<QueueBoard> {

@@ -8,6 +8,7 @@ import { MapPin } from 'lucide-react';
 import { DEFAULTS, ABOUT_COPY } from '../data';
 import { BilingualLine } from './BilingualLine';
 import { parseBoldMarkup } from '../utils/richText';
+import { AboutGalleryCarousel } from './AboutGalleryCarousel';
 
 export const AboutSection: React.FC = () => {
   return (
@@ -22,14 +23,8 @@ export const AboutSection: React.FC = () => {
       </div>
 
       <div className="bg-white rounded-2xl p-6 md:p-8 border border-stone-200/60 shadow-sm leading-relaxed space-y-6">
-        <div className="flex justify-center">
-          <div className="bg-black rounded-2xl px-4 py-3 sm:px-8 sm:py-4 shadow-lg ring-2 ring-[#FDD772]/30 w-full max-w-xl">
-            <img
-              src={ABOUT_COPY.logoSrc}
-              alt={`${DEFAULTS.CLINIC_NAME} ${DEFAULTS.CLINIC_ENGLISH}`}
-              className="w-full h-auto object-contain"
-            />
-          </div>
+        <div className="pb-4">
+          <AboutGalleryCarousel />
         </div>
 
         <div className="space-y-6 md:space-y-7 text-[#10143A]/90">

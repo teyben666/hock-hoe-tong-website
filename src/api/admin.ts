@@ -10,6 +10,8 @@ import {
   QueueCallMode,
   QueueStatus,
   WellnessTip,
+  Treatment,
+  AboutGalleryItem,
   AdminSummary,
   AdminTrendRange,
   AdminTrendPayload,
@@ -215,13 +217,74 @@ export async function staffDeleteWellnessTip(id: string): Promise<void> {
 
 export async function staffUploadWellnessMedia(
   kind: 'image' | 'video',
-  dataUrl: string
+  dataUrl: string,
+  folder: 'wellness' | 'about' | 'treatments' = 'wellness'
 ): Promise<string> {
   const data = await adminRequest<{ url: string }>('/wellness/upload', {
     method: 'POST',
-    body: JSON.stringify({ kind, dataUrl }),
+    body: JSON.stringify({ kind, dataUrl, folder }),
   });
   return data.url;
+}
+
+export async function staffFetchAboutGallery(): Promise<AboutGalleryItem[]> {
+  const data = await adminRequest<{ items: AboutGalleryItem[] }>('/about-gallery');
+  return data.items;
+}
+
+export async function staffCreateAboutGalleryItem(
+  payload: Partial<AboutGalleryItem>
+): Promise<AboutGalleryItem> {
+  const data = await adminRequest<{ item: AboutGalleryItem }>('/about-gallery', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+  return data.item;
+}
+
+export async function staffUpdateAboutGalleryItem(
+  id: string,
+  payload: Partial<AboutGalleryItem>
+): Promise<AboutGalleryItem> {
+  const data = await adminRequest<{ item: AboutGalleryItem }>(`/about-gallery/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  });
+  return data.item;
+}
+
+export async function staffDeleteAboutGalleryItem(id: string): Promise<void> {
+  await adminRequest(`/about-gallery/${id}`, { method: 'DELETE' });
+}
+
+export async function staffFetchTreatmentsAdmin(): Promise<Treatment[]> {
+  const data = await adminRequest<{ treatments: Treatment[] }>('/treatments');
+  return data.treatments;
+}
+
+export async function staffCreateTreatment(
+  payload: Partial<Treatment>
+): Promise<Treatment> {
+  const data = await adminRequest<{ treatment: Treatment }>('/treatments', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+  return data.treatment;
+}
+
+export async function staffUpdateTreatment(
+  id: string,
+  payload: Partial<Treatment>
+): Promise<Treatment> {
+  const data = await adminRequest<{ treatment: Treatment }>(`/treatments/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  });
+  return data.treatment;
+}
+
+export async function staffDeleteTreatment(id: string): Promise<void> {
+  await adminRequest(`/treatments/${id}`, { method: 'DELETE' });
 }
 
 export async function staffFetchQueueBoard(): Promise<QueueBoard> {

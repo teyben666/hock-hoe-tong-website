@@ -40,15 +40,28 @@ export interface Doctor {
 
 export interface Treatment {
   id: string;
-  name: string;
   /** 英文副标题（可选） */
   nameEn?: string;
   /** 短标语（可选） */
   tagline?: string;
+  name: string;
   operation: string;
   effects: string;
   suitableFor: string;
   iconName: string;
+  imageUrl?: string;
+  videoUrl?: string;
+  sortOrder?: number;
+  enabled?: boolean;
+}
+
+export interface AboutGalleryItem {
+  id: string;
+  imageUrl: string;
+  captionZh?: string;
+  captionEn?: string;
+  sortOrder: number;
+  enabled: boolean;
 }
 
 export interface Reservation {

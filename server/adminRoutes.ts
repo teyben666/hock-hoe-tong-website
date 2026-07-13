@@ -39,7 +39,19 @@ import {
   updateWellnessTip,
   deleteWellnessTip,
 } from './wellnessTips.js';
-import { saveWellnessDataUrl } from './wellnessUpload.js';
+import { saveMediaDataUrl, type UploadFolder } from './wellnessUpload.js';
+import {
+  getAllAboutGallery,
+  createAboutGalleryItem,
+  updateAboutGalleryItem,
+  deleteAboutGalleryItem,
+} from './aboutGallery.js';
+import {
+  getAllTreatments,
+  createTreatment,
+  updateTreatment,
+  deleteTreatment,
+} from './treatments.js';
 import { buildAdminSummary } from './adminSummary.js';
 import { setHistoricalBaseline } from './clinicStats.js';
 import { buildAdminTrends, type TrendRange } from './adminTrends.js';
@@ -164,8 +176,11 @@ adminRouter.get('/wellness', requireStaff, (_req, res) => {
 adminRouter.post('/wellness/upload', requireStaff, (req, res) => {
   try {
     const kind = req.body?.kind === 'video' ? 'video' : 'image';
+    const folder = (['wellness', 'about', 'treatments'].includes(req.body?.folder)
+      ? req.body.folder
+      : 'wellness') as UploadFolder;
     const dataUrl = String(req.body?.dataUrl ?? '');
-    const saved = saveWellnessDataUrl(dataUrl, kind);
+    const saved = saveMediaDataUrl(dataUrl, kind, folder);
     res.status(201).json({ success: true, url: saved.url, bytes: saved.bytes });
   } catch (e) {
     const msg = e instanceof Error ? e.message : '上传失败';
@@ -196,6 +211,70 @@ adminRouter.put('/wellness/:id', requireStaff, (req, res) => {
 
 adminRouter.delete('/wellness/:id', requireStaff, (req, res) => {
   const ok = deleteWellnessTip(req.params.id);
+  if (!ok) return res.status(404).json({ error: '条目不存在' });
+  res.json({ success: true });
+});
+
+/** About 相册 */
+adminRouter.get('/about-gallery', requireStaff, (_req, res) => {
+  res.json({ items: getAllAboutGallery() });
+});
+
+adminRouter.post('/about-gallery', requireStaff, (req, res) => {
+  try {
+    const item = createAboutGalleryItem(req.body || {});
+    res.status(201).json({ success: true, item });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : '保存失败';
+    res.status(400).json({ error: msg });
+  }
+});
+
+adminRouter.put('/about-gallery/:id', requireStaff, (req, res) => {
+  try {
+    const item = updateAboutGalleryItem(req.params.id, req.body || {});
+    if (!item) return res.status(404).json({ error: '条目不存在' });
+    res.json({ success: true, item });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : '保存失败';
+    res.status(400).json({ error: msg });
+  }
+});
+
+adminRouter.delete('/about-gallery/:id', requireStaff, (req, res) => {
+  const ok = deleteAboutGalleryItem(req.params.id);
+  if (!ok) return res.status(404).json({ error: '条目不存在' });
+  res.json({ success: true });
+});
+
+/** 治疗项目 */
+adminRouter.get('/treatments', requireStaff, (_req, res) => {
+  res.json({ treatments: getAllTreatments() });
+});
+
+adminRouter.post('/treatments', requireStaff, (req, res) => {
+  try {
+    const treatment = createTreatment(req.body || {});
+    res.status(201).json({ success: true, treatment });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : '保存失败';
+    res.status(400).json({ error: msg });
+  }
+});
+
+adminRouter.put('/treatments/:id', requireStaff, (req, res) => {
+  try {
+    const treatment = updateTreatment(req.params.id, req.body || {});
+    if (!treatment) return res.status(404).json({ error: '条目不存在' });
+    res.json({ success: true, treatment });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : '保存失败';
+    res.status(400).json({ error: msg });
+  }
+});
+
+adminRouter.delete('/treatments/:id', requireStaff, (req, res) => {
+  const ok = deleteTreatment(req.params.id);
   if (!ok) return res.status(404).json({ error: '条目不存在' });
   res.json({ success: true });
 });

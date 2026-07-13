@@ -5,7 +5,8 @@
 
 import React, { useState } from 'react';
 import { Reservation } from '../types';
-import { DOCTORS, TREATMENTS, DEFAULTS, BOOKING_COPY } from '../data';
+import { DOCTORS, DEFAULTS, BOOKING_COPY } from '../data';
+import { useTreatments } from '../hooks/useTreatments';
 import { queryBookingsByPhone, cancelBooking, checkApiHealth } from '../api';
 import { BilingualLine } from './BilingualLine';
 import { Search, Trash2, AlertCircle, Phone } from 'lucide-react';
@@ -13,6 +14,7 @@ import { Search, Trash2, AlertCircle, Phone } from 'lucide-react';
 const Q = BOOKING_COPY.query;
 
 export const BookingQuery: React.FC = () => {
+  const { treatments } = useTreatments(true);
   const [phone, setPhone] = useState('');
   const [results, setResults] = useState<Reservation[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
@@ -121,7 +123,7 @@ export const BookingQuery: React.FC = () => {
                   {res.patientName} · {res.date} {res.timeSlot}
                 </p>
                 <p className="text-xs text-stone-500 mt-1">
-                  {TREATMENTS.find((t) => t.id === res.treatmentId)?.name} /{' '}
+                  {treatments.find((t) => t.id === res.treatmentId)?.name} /{' '}
                   {DOCTORS.find((d) => d.id === res.doctorId)?.name}
                 </p>
               </div>

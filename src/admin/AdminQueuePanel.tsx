@@ -19,7 +19,8 @@ import {
   staffSetQueueStatus,
 } from '../api/admin';
 import { Gender, QueueBoard, QueueCallMode, QueueStatus } from '../types';
-import { DEFAULTS, TREATMENTS } from '../data';
+import { DEFAULTS } from '../data';
+import { useTreatments } from '../hooks/useTreatments';
 import {
   PatientIdentityFields,
   PatientIdentityValues,
@@ -57,6 +58,7 @@ interface AdminQueuePanelProps {
 }
 
 export const AdminQueuePanel: React.FC<AdminQueuePanelProps> = ({ onMessage }) => {
+  const { treatments } = useTreatments(true);
   const [board, setBoard] = useState<QueueBoard | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -398,7 +400,7 @@ export const AdminQueuePanel: React.FC<AdminQueuePanelProps> = ({ onMessage }) =
           onChange={(e) => setWiTreatment(e.target.value)}
           className="w-full border rounded-lg px-3 py-2 text-sm"
         >
-          {TREATMENTS.map((t) => (
+          {treatments.map((t) => (
             <option key={t.id} value={t.id}>
               {t.name}
             </option>

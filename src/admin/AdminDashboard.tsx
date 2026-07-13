@@ -10,9 +10,12 @@ import {
   clearStaffToken,
 } from '../api/admin';
 import { Reservation } from '../types';
-import { TREATMENTS, DEFAULTS } from '../data';
+import { DEFAULTS } from '../data';
+import { useTreatments } from '../hooks/useTreatments';
 import { AdminSchedulePanel } from './AdminSchedulePanel';
 import { AdminWellnessPanel } from './AdminWellnessPanel';
+import { AdminAboutGalleryPanel } from './AdminAboutGalleryPanel';
+import { AdminTreatmentsPanel } from './AdminTreatmentsPanel';
 import { AdminQueuePanel } from './AdminQueuePanel';
 import { AdminDashboardPanel } from './AdminDashboardPanel';
 import { useAdminSummary } from './useAdminSummary';
@@ -38,6 +41,8 @@ import {
   CalendarOff,
   Megaphone,
   Leaf,
+  Images,
+  Stethoscope,
 } from 'lucide-react';
 
 const emptyPhoneIdentity: PatientIdentityValues = {
@@ -54,6 +59,8 @@ const ADMIN_NAV: { id: AdminTab; label: string; Icon: typeof LayoutList }[] = [
   { id: 'phone', label: '代约', Icon: Phone },
   { id: 'schedule', label: '休息', Icon: CalendarOff },
   { id: 'wellness', label: '养生', Icon: Leaf },
+  { id: 'gallery', label: '相册', Icon: Images },
+  { id: 'treatments', label: '项目', Icon: Stethoscope },
 ];
 
 interface AdminDashboardProps {
@@ -61,6 +68,7 @@ interface AdminDashboardProps {
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
+  const { treatments } = useTreatments(true);
   const [tab, setTab] = useState<AdminTab>('dashboard');
   const [viewDate, setViewDateState] = useState(loadStoredViewDate);
   const [message, setMessage] = useState('');
@@ -209,7 +217,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   };
 
   const dayClosed = dayDetail?.closed ?? false;
-  const treatmentName = (id: string) => TREATMENTS.find((t) => t.id === id)?.name || id;
+  const treatmentName = (id: string) => treatments.find((t) => t.id === id)?.name || id;
   const todayBookedCount = countByDate.get(TODAY) ?? 0;
 
   return (
@@ -465,6 +473,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         )}
 
         {tab === 'wellness' && <AdminWellnessPanel onMessage={setMessage} />}
+        {tab === 'gallery' && <AdminAboutGalleryPanel onMessage={setMessage} />}
+        {tab === 'treatments' && <AdminTreatmentsPanel onMessage={setMessage} />}
         </main>
       </div>
     </div>

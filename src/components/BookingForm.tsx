@@ -6,7 +6,6 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import {
   DOCTORS,
-  TREATMENTS,
   DEFAULTS,
   BOOKING_DAYS_AHEAD,
   DEFAULT_DOCTOR_ID,
@@ -16,6 +15,7 @@ import { BilingualLine } from './BilingualLine';
 import { generateConsultTimeSlots } from '../utils/consultSlots';
 import { Reservation, Gender, SlotAvailability } from '../types';
 import { createBooking, fetchSlotsRange, checkApiHealth } from '../api';
+import { useTreatments } from '../hooks/useTreatments';
 import {
   filterVisibleSlots,
   getClinicToday,
@@ -52,6 +52,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
   onSelectDoctor,
   onSelectTreatment,
 }) => {
+  const { treatments } = useTreatments(true);
   const [availability, setAvailability] = useState<SlotAvailability[]>([]);
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedSlot, setSelectedSlot] = useState('');
@@ -499,7 +500,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                     className="w-full mt-1 rounded-lg border p-2.5 text-sm bg-white"
                   >
                     <option value="">{F.selectTreatmentZh}</option>
-                    {TREATMENTS.map((t) => (
+                    {treatments.map((t) => (
                       <option key={t.id} value={t.id}>
                         {t.name}
                       </option>

@@ -7,7 +7,15 @@ import { Reservation, SlotAvailability } from '../types';
 
 const POLL_MS = 45_000;
 
-export type AdminTab = 'dashboard' | 'list' | 'phone' | 'schedule' | 'queue' | 'wellness';
+export type AdminTab =
+  | 'dashboard'
+  | 'list'
+  | 'phone'
+  | 'schedule'
+  | 'queue'
+  | 'wellness'
+  | 'gallery'
+  | 'treatments';
 
 function activeBookings(list: Reservation[]) {
   return list.filter((b) => b.status !== 'cancelled');
