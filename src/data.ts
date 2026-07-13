@@ -96,7 +96,7 @@ export const BOOKING_COPY = {
       },
       {
         zh: '每两周的周三与周四休息',
-        en: 'Closed every other on Wednesday & Thursday',
+        en: 'Closed every other Wednesday & Thursday',
       },
       {
         zh: '系统仅显示当前时间之后的可预约时段',
@@ -114,7 +114,7 @@ export const BOOKING_COPY = {
     hoursZh: '中药店每天 9:30 AM – 7:30 PM；门诊 10:00 AM – 7:30 PM',
     hoursEn: 'Shop daily 9:30 AM – 7:30 PM; Consultation 10:00 AM – 7:30 PM',
     restZh: '每两周的周三与周四休息',
-    restEn: 'Closed every other on Wednesday & Thursday',
+    restEn: 'Closed every other Wednesday & Thursday',
     callZh: '拨号',
     callEn: 'Call',
   },
