@@ -23,7 +23,7 @@ export const DEFAULTS = {
   SHOP_HOURS: '9:30am-7:30pm',
   TCM_HOURS: '10am-7:30pm',
   REST_DAYS:
-    '周三&周四（2周1次）Closed on Wednesday & Thursday BIWEEKLY',
+    '周三&周四（2周1次）Closed BIWEEKLY on Wednesday & Thursday',
   MAIN_BUSINESS: '药材零售/中医诊疗/健康咨询',
   ADDRESS:
     '34，Jalan Beladau 8，Taman Puteri Wangsa，81800，Ulu Tiram，Johor.',
@@ -407,7 +407,7 @@ export const ABOUT_COPY = {
     tcmValue: '10am-7:30pm',
     restZh: '休息日',
     restValue: '周三&周四（2周1次）',
-    restEn: 'Closed on Wednesday & Thursday BIWEEKLY',
+    restEn: 'Closed BIWEEKLY on Wednesday & Thursday',
   },
 } as const;
 
