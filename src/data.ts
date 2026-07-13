@@ -29,8 +29,7 @@ export const DEFAULTS = {
     '34，Jalan Beladau 8，Taman Puteri Wangsa，81800，Ulu Tiram，Johor.',
   FOOTER_TAGLINE_1: '草木有情 • 岐黄有道',
   FOOTER_TAGLINE_2: '药材甄选 · 中医调养 · 健康相伴',
-  MAPS_URL:
-    'https://www.google.com/maps/search/?api=1&query=34+Jalan+Beladau+8+Taman+Puteri+Wangsa+81800+Ulu+Tiram+Johor',
+  MAPS_URL: 'https://maps.app.goo.gl/BbVV67mhZ5VtWDiS6',
   SLOGAN: '福泽苍生，和调阴阳',
   HERO_MOTTO: '承岐黄之道 • 济苍生之需',
   HERO_SUBHEAD: '始于1987 • 药材老字号',
