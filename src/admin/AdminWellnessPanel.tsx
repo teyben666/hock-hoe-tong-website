@@ -1,5 +1,5 @@
 /**
- * 店员后台：养生知识增删改（支持换行、**加粗**、图片/视频）
+ * 店员后台：养生知识增删改（支持换行、**加粗**、图片裁剪压缩/视频）
  */
 
 import React, { useEffect, useRef, useState } from 'react';
@@ -12,6 +12,7 @@ import {
 } from '../api/admin';
 import type { WellnessTip } from '../types';
 import { Leaf, Plus, Save, Trash2, Eye, EyeOff, ImagePlus, Film, X } from 'lucide-react';
+import { WellnessImageEditor } from './WellnessImageEditor';
 
 const emptyForm = (): Omit<WellnessTip, 'createdAt' | 'updatedAt'> => ({
   id: '',
@@ -48,6 +49,7 @@ export const AdminWellnessPanel: React.FC<AdminWellnessPanelProps> = ({ onMessag
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm());
   const [localMsg, setLocalMsg] = useState('');
+  const [imageEditorSrc, setImageEditorSrc] = useState<string | null>(null);
   const formRef = useRef<HTMLDivElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
@@ -161,17 +163,46 @@ export const AdminWellnessPanel: React.FC<AdminWellnessPanelProps> = ({ onMessag
     }
   };
 
-  const handleMediaFile = async (kind: 'image' | 'video', file: File | undefined) => {
+  const openImageEditor = async (file: File | undefined) => {
     if (!file) return;
-    setUploading(kind);
+    if (!file.type.startsWith('image/')) {
+      setLocalMsg('请选择图片文件');
+      return;
+    }
+    try {
+      const dataUrl = await readFileAsDataUrl(file);
+      setImageEditorSrc(dataUrl);
+      setLocalMsg('');
+    } catch (e) {
+      setLocalMsg(e instanceof Error ? e.message : '读取图片失败');
+    }
+  };
+
+  const handleImageEditorConfirm = async (jpegDataUrl: string) => {
+    setImageEditorSrc(null);
+    setUploading('image');
+    setLocalMsg('');
+    try {
+      const url = await staffUploadWellnessMedia('image', jpegDataUrl);
+      setForm((f) => ({ ...f, imageUrl: url }));
+      setLocalMsg('图片已裁剪压缩并上传');
+      onMessage?.('养生图片已上传');
+    } catch (e) {
+      setLocalMsg(e instanceof Error ? e.message : '上传失败');
+    } finally {
+      setUploading(null);
+    }
+  };
+
+  const handleVideoFile = async (file: File | undefined) => {
+    if (!file) return;
+    setUploading('video');
     setLocalMsg('');
     try {
       const dataUrl = await readFileAsDataUrl(file);
-      const url = await staffUploadWellnessMedia(kind, dataUrl);
-      setForm((f) =>
-        kind === 'image' ? { ...f, imageUrl: url } : { ...f, videoUrl: url }
-      );
-      setLocalMsg(kind === 'image' ? '图片已上传' : '视频已上传');
+      const url = await staffUploadWellnessMedia('video', dataUrl);
+      setForm((f) => ({ ...f, videoUrl: url }));
+      setLocalMsg('视频已上传');
     } catch (e) {
       setLocalMsg(e instanceof Error ? e.message : '上传失败');
     } finally {
@@ -181,6 +212,15 @@ export const AdminWellnessPanel: React.FC<AdminWellnessPanelProps> = ({ onMessag
 
   return (
     <div className="bg-white rounded-2xl p-5 shadow-sm border space-y-5">
+      {imageEditorSrc ? (
+        <WellnessImageEditor
+          imageSrc={imageEditorSrc}
+          previewTitle={form.titleZh || '养生知识预览'}
+          onCancel={() => setImageEditorSrc(null)}
+          onConfirm={handleImageEditorConfirm}
+        />
+      ) : null}
+
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="font-serif font-bold text-stone-800 flex items-center gap-2">
           <Leaf size={18} className="text-[#FDD772]" />
@@ -198,7 +238,8 @@ export const AdminWellnessPanel: React.FC<AdminWellnessPanelProps> = ({ onMessag
 
       <p className="text-xs text-stone-500 leading-relaxed">
         官网「养生知识」轮播每 30 秒自动切换；仅「显示」状态的条目会出现在前台。
-        正文可按 Enter 换行；用 <code className="bg-stone-100 px-1 rounded">**文字**</code> 加粗；可选配图片或视频。
+        正文可按 Enter 换行；用 <code className="bg-stone-100 px-1 rounded">**文字**</code> 加粗。
+        图片可选裁剪（16:9 / 自由）并自动压缩；视频仅限大小上传。
       </p>
 
       {localMsg && (
@@ -274,7 +315,7 @@ export const AdminWellnessPanel: React.FC<AdminWellnessPanelProps> = ({ onMessag
                   accept="image/jpeg,image/png,image/webp,image/gif"
                   className="hidden"
                   onChange={(e) => {
-                    void handleMediaFile('image', e.target.files?.[0]);
+                    void openImageEditor(e.target.files?.[0]);
                     e.target.value = '';
                   }}
                 />
@@ -284,7 +325,7 @@ export const AdminWellnessPanel: React.FC<AdminWellnessPanelProps> = ({ onMessag
                   accept="video/mp4,video/webm,video/quicktime"
                   className="hidden"
                   onChange={(e) => {
-                    void handleMediaFile('video', e.target.files?.[0]);
+                    void handleVideoFile(e.target.files?.[0]);
                     e.target.value = '';
                   }}
                 />
@@ -295,7 +336,7 @@ export const AdminWellnessPanel: React.FC<AdminWellnessPanelProps> = ({ onMessag
                   className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-medium text-stone-700 disabled:opacity-60"
                 >
                   <ImagePlus size={14} />
-                  {uploading === 'image' ? '上传中…' : '上传图片'}
+                  {uploading === 'image' ? '上传中…' : '选择图片并裁剪'}
                 </button>
                 <button
                   type="button"
