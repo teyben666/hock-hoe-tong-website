@@ -1,16 +1,17 @@
 /**
- * 店员后台：养生知识增删改
+ * 店员后台：养生知识增删改（支持换行、**加粗**、图片/视频）
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   staffFetchWellnessTips,
   staffCreateWellnessTip,
   staffUpdateWellnessTip,
   staffDeleteWellnessTip,
+  staffUploadWellnessMedia,
 } from '../api/admin';
 import type { WellnessTip } from '../types';
-import { Leaf, Plus, Save, Trash2, Eye, EyeOff } from 'lucide-react';
+import { Leaf, Plus, Save, Trash2, Eye, EyeOff, ImagePlus, Film, X } from 'lucide-react';
 
 const emptyForm = (): Omit<WellnessTip, 'createdAt' | 'updatedAt'> => ({
   id: '',
@@ -20,9 +21,20 @@ const emptyForm = (): Omit<WellnessTip, 'createdAt' | 'updatedAt'> => ({
   titleEn: '',
   bodyZh: '',
   bodyEn: '',
+  imageUrl: '',
+  videoUrl: '',
   sortOrder: 0,
   enabled: true,
 });
+
+function readFileAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ''));
+    reader.onerror = () => reject(new Error('读取文件失败'));
+    reader.readAsDataURL(file);
+  });
+}
 
 interface AdminWellnessPanelProps {
   onMessage?: (msg: string) => void;
@@ -32,9 +44,13 @@ export const AdminWellnessPanel: React.FC<AdminWellnessPanelProps> = ({ onMessag
   const [tips, setTips] = useState<WellnessTip[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState<'image' | 'video' | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm());
   const [localMsg, setLocalMsg] = useState('');
+  const formRef = useRef<HTMLDivElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
 
   const load = () => {
     setLoading(true);
@@ -52,11 +68,18 @@ export const AdminWellnessPanel: React.FC<AdminWellnessPanelProps> = ({ onMessag
     load();
   }, []);
 
+  const scrollFormIntoView = () => {
+    requestAnimationFrame(() => {
+      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  };
+
   const startNew = () => {
     const maxOrder = tips.reduce((m, t) => Math.max(m, t.sortOrder), -1);
     setEditingId('__new__');
     setForm({ ...emptyForm(), sortOrder: maxOrder + 1 });
     setLocalMsg('');
+    scrollFormIntoView();
   };
 
   const startEdit = (tip: WellnessTip) => {
@@ -69,10 +92,13 @@ export const AdminWellnessPanel: React.FC<AdminWellnessPanelProps> = ({ onMessag
       titleEn: tip.titleEn,
       bodyZh: tip.bodyZh,
       bodyEn: tip.bodyEn,
+      imageUrl: tip.imageUrl || '',
+      videoUrl: tip.videoUrl || '',
       sortOrder: tip.sortOrder,
       enabled: tip.enabled,
     });
     setLocalMsg('');
+    scrollFormIntoView();
   };
 
   const cancelEdit = () => {
@@ -85,7 +111,8 @@ export const AdminWellnessPanel: React.FC<AdminWellnessPanelProps> = ({ onMessag
     setLocalMsg('');
     try {
       if (editingId === '__new__') {
-        await staffCreateWellnessTip(form);
+        const { id: _omitId, ...payload } = form;
+        await staffCreateWellnessTip({ ...payload, id: '' });
         setLocalMsg('已新增');
         onMessage?.('养生知识已新增');
       } else if (editingId) {
@@ -105,6 +132,10 @@ export const AdminWellnessPanel: React.FC<AdminWellnessPanelProps> = ({ onMessag
   };
 
   const handleDelete = async (id: string) => {
+    if (!id) {
+      setLocalMsg('该条目 ID 无效，请删除后重新新增');
+      return;
+    }
     if (!confirm('确定删除这条养生知识？')) return;
     try {
       await staffDeleteWellnessTip(id);
@@ -118,11 +149,33 @@ export const AdminWellnessPanel: React.FC<AdminWellnessPanelProps> = ({ onMessag
   };
 
   const toggleEnabled = async (tip: WellnessTip) => {
+    if (!tip.id) {
+      setLocalMsg('该条目 ID 无效，请编辑保存一次或删除后重建');
+      return;
+    }
     try {
       await staffUpdateWellnessTip(tip.id, { enabled: !tip.enabled });
       load();
     } catch (e) {
       setLocalMsg(e instanceof Error ? e.message : '更新失败');
+    }
+  };
+
+  const handleMediaFile = async (kind: 'image' | 'video', file: File | undefined) => {
+    if (!file) return;
+    setUploading(kind);
+    setLocalMsg('');
+    try {
+      const dataUrl = await readFileAsDataUrl(file);
+      const url = await staffUploadWellnessMedia(kind, dataUrl);
+      setForm((f) =>
+        kind === 'image' ? { ...f, imageUrl: url } : { ...f, videoUrl: url }
+      );
+      setLocalMsg(kind === 'image' ? '图片已上传' : '视频已上传');
+    } catch (e) {
+      setLocalMsg(e instanceof Error ? e.message : '上传失败');
+    } finally {
+      setUploading(null);
     }
   };
 
@@ -143,8 +196,9 @@ export const AdminWellnessPanel: React.FC<AdminWellnessPanelProps> = ({ onMessag
         </button>
       </div>
 
-      <p className="text-xs text-stone-500">
+      <p className="text-xs text-stone-500 leading-relaxed">
         官网「养生知识」轮播每 30 秒自动切换；仅「显示」状态的条目会出现在前台。
+        正文可按 Enter 换行；用 <code className="bg-stone-100 px-1 rounded">**文字**</code> 加粗；可选配图片或视频。
       </p>
 
       {localMsg && (
@@ -154,7 +208,10 @@ export const AdminWellnessPanel: React.FC<AdminWellnessPanelProps> = ({ onMessag
       )}
 
       {editingId && (
-        <div className="border border-[#FDD772]/40 rounded-xl p-4 space-y-3 bg-[#FAF8F5]">
+        <div
+          ref={formRef}
+          className="border border-[#FDD772]/40 rounded-xl p-4 space-y-3 bg-[#FAF8F5] scroll-mt-24"
+        >
           <p className="text-sm font-semibold text-stone-800">
             {editingId === '__new__' ? '新增条目' : '编辑条目'}
           </p>
@@ -192,9 +249,9 @@ export const AdminWellnessPanel: React.FC<AdminWellnessPanelProps> = ({ onMessag
               />
             </label>
             <label className="block text-xs sm:col-span-2">
-              <span className="text-stone-500">正文（中）</span>
+              <span className="text-stone-500">正文（中）— Enter 换行，**加粗**</span>
               <textarea
-                className="mt-1 w-full border rounded-lg px-2 py-1.5 text-sm min-h-[88px]"
+                className="mt-1 w-full border rounded-lg px-2 py-1.5 text-sm min-h-[120px] whitespace-pre-wrap"
                 value={form.bodyZh}
                 onChange={(e) => setForm((f) => ({ ...f, bodyZh: e.target.value }))}
               />
@@ -202,11 +259,90 @@ export const AdminWellnessPanel: React.FC<AdminWellnessPanelProps> = ({ onMessag
             <label className="block text-xs sm:col-span-2">
               <span className="text-stone-500">正文（英，可留空）</span>
               <textarea
-                className="mt-1 w-full border rounded-lg px-2 py-1.5 text-sm min-h-[88px]"
+                className="mt-1 w-full border rounded-lg px-2 py-1.5 text-sm min-h-[88px] whitespace-pre-wrap"
                 value={form.bodyEn}
                 onChange={(e) => setForm((f) => ({ ...f, bodyEn: e.target.value }))}
               />
             </label>
+
+            <div className="sm:col-span-2 space-y-2">
+              <p className="text-xs text-stone-500">图片 / 视频（可选）</p>
+              <div className="flex flex-wrap gap-2">
+                <input
+                  ref={imageInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  className="hidden"
+                  onChange={(e) => {
+                    void handleMediaFile('image', e.target.files?.[0]);
+                    e.target.value = '';
+                  }}
+                />
+                <input
+                  ref={videoInputRef}
+                  type="file"
+                  accept="video/mp4,video/webm,video/quicktime"
+                  className="hidden"
+                  onChange={(e) => {
+                    void handleMediaFile('video', e.target.files?.[0]);
+                    e.target.value = '';
+                  }}
+                />
+                <button
+                  type="button"
+                  disabled={uploading !== null}
+                  onClick={() => imageInputRef.current?.click()}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-medium text-stone-700 disabled:opacity-60"
+                >
+                  <ImagePlus size={14} />
+                  {uploading === 'image' ? '上传中…' : '上传图片'}
+                </button>
+                <button
+                  type="button"
+                  disabled={uploading !== null}
+                  onClick={() => videoInputRef.current?.click()}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-medium text-stone-700 disabled:opacity-60"
+                >
+                  <Film size={14} />
+                  {uploading === 'video' ? '上传中…' : '上传视频'}
+                </button>
+              </div>
+              {form.imageUrl ? (
+                <div className="relative inline-block max-w-full">
+                  <img
+                    src={form.imageUrl}
+                    alt="预览"
+                    className="max-h-40 rounded-lg border border-stone-200"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setForm((f) => ({ ...f, imageUrl: '' }))}
+                    className="absolute top-1 right-1 p-1 rounded-full bg-white/90 border shadow-sm"
+                    title="移除图片"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ) : null}
+              {form.videoUrl ? (
+                <div className="relative max-w-md">
+                  <video
+                    src={form.videoUrl}
+                    controls
+                    className="w-full rounded-lg border border-stone-200 max-h-48 bg-black"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setForm((f) => ({ ...f, videoUrl: '' }))}
+                    className="absolute top-1 right-1 p-1 rounded-full bg-white/90 border shadow-sm"
+                    title="移除视频"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ) : null}
+            </div>
+
             <label className="block text-xs">
               <span className="text-stone-500">排序（数字越小越靠前）</span>
               <input
@@ -230,7 +366,7 @@ export const AdminWellnessPanel: React.FC<AdminWellnessPanelProps> = ({ onMessag
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
-              disabled={saving}
+              disabled={saving || uploading !== null}
               onClick={handleSave}
               className="inline-flex items-center gap-1 px-4 py-2 rounded-lg bg-[#FDD772] text-stone-900 text-sm font-medium disabled:opacity-60"
             >
@@ -256,7 +392,7 @@ export const AdminWellnessPanel: React.FC<AdminWellnessPanelProps> = ({ onMessag
         <ul className="space-y-3">
           {tips.map((tip) => (
             <li
-              key={tip.id}
+              key={tip.id || `broken-${tip.titleZh}-${tip.sortOrder}`}
               className="border border-stone-200 rounded-xl p-4 flex flex-col sm:flex-row sm:items-start gap-3"
             >
               <div className="flex-1 min-w-0 space-y-1">
@@ -267,10 +403,21 @@ export const AdminWellnessPanel: React.FC<AdminWellnessPanelProps> = ({ onMessag
                   {!tip.enabled && (
                     <span className="text-[10px] text-stone-400">（已隐藏）</span>
                   )}
+                  {!tip.id && (
+                    <span className="text-[10px] text-red-500">ID 缺失，请重新保存</span>
+                  )}
                   <span className="text-[10px] text-stone-400 font-mono">#{tip.sortOrder}</span>
+                  {tip.imageUrl ? (
+                    <span className="text-[10px] text-stone-400">含图</span>
+                  ) : null}
+                  {tip.videoUrl ? (
+                    <span className="text-[10px] text-stone-400">含视频</span>
+                  ) : null}
                 </div>
                 <p className="font-serif font-semibold text-stone-800 text-sm">{tip.titleZh}</p>
-                <p className="text-xs text-stone-500 line-clamp-2">{tip.bodyZh}</p>
+                <p className="text-xs text-stone-500 line-clamp-2 whitespace-pre-line">
+                  {tip.bodyZh}
+                </p>
               </div>
               <div className="flex flex-wrap gap-2 shrink-0">
                 <button

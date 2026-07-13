@@ -18,6 +18,10 @@ export interface WellnessTip {
   titleEn: string;
   bodyZh: string;
   bodyEn: string;
+  /** 可选：/uploads/wellness/... 或外链 */
+  imageUrl: string;
+  /** 可选：/uploads/wellness/... 或外链 */
+  videoUrl: string;
   sortOrder: number;
   enabled: boolean;
   createdAt: string;
@@ -35,6 +39,8 @@ const SEED_TIPS: Omit<WellnessTip, 'createdAt' | 'updatedAt'>[] = [
       '马来西亚多雨潮湿，易出现疲倦、胃口差、肢体困重。日常宜少生冷油腻，可适量薏米、赤小豆、茯苓等配伍（需据体质）。若久湿不解或伴明显不适，宜请医师舌脉辨证，勿自行长期猛用苦寒祛湿方。',
     bodyEn:
       'Humid weather may bring fatigue, poor appetite, or heaviness. Prefer warm, light meals; herbal combinations such as coix seed or poria should suit your constitution. Persistent symptoms warrant a TCM consultation—avoid long-term aggressive “damp-clearing” formulas on your own.',
+    imageUrl: '',
+    videoUrl: '',
     sortOrder: 0,
     enabled: true,
   },
@@ -48,6 +54,8 @@ const SEED_TIPS: Omit<WellnessTip, 'createdAt' | 'updatedAt'>[] = [
       '本店有杂凉茶、夏桑菊、罗汉果菊等，多作清热生津、日常调理之用，不能替代中药汤剂治疗。儿童、孕妇、脾胃虚寒或正在服药者，选购前宜咨询店员或医师。症状持续或加重，请预约面诊。',
     bodyEn:
       'Shop teas such as herbal cooling blends are for daily wellness, not a substitute for prescribed decoctions. Children, pregnant clients, those with cold sensitivity, or on medication should ask staff or the physician first. Worsening symptoms—please book a visit.',
+    imageUrl: '',
+    videoUrl: '',
     sortOrder: 1,
     enabled: true,
   },
@@ -61,6 +69,8 @@ const SEED_TIPS: Omit<WellnessTip, 'createdAt' | 'updatedAt'>[] = [
       '小儿推拿常用于健脾、助眠、增强抵抗力等，手法需专业、力度宜轻。居家可注意规律作息、饮食清淡，避免过饱过凉。发热、抽搐、精神差等急症，请立即就医，不宜仅依赖推拿延误诊治。',
     bodyEn:
       'Paediatric tuina supports digestion, sleep, and resilience when performed by trained hands with gentle pressure. At home: regular routines and mild meals. Fever, convulsions, or lethargy need emergency care—do not delay medical help relying on tuina alone.',
+    imageUrl: '',
+    videoUrl: '',
     sortOrder: 2,
     enabled: true,
   },
@@ -74,20 +84,36 @@ function newId() {
   return `w_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
-function normalizeTip(raw: Partial<WellnessTip>, existing?: WellnessTip): WellnessTip {
+/** 空字符串视为无 id，避免后台 emptyForm 的 id:'' 被存进库 */
+function resolveId(rawId: unknown, existingId?: string): string {
+  const fromRaw = String(rawId ?? '').trim();
+  if (fromRaw) return fromRaw;
+  const fromExisting = String(existingId ?? '').trim();
+  if (fromExisting) return fromExisting;
+  return newId();
+}
+
+function normalizeTip(
+  raw: Partial<WellnessTip>,
+  existing?: WellnessTip,
+  touch = false
+): WellnessTip {
   const t = nowIso();
   return {
-    id: String(raw.id ?? existing?.id ?? newId()),
+    id: resolveId(raw.id, existing?.id),
     tagZh: String(raw.tagZh ?? existing?.tagZh ?? '').trim(),
     tagEn: String(raw.tagEn ?? existing?.tagEn ?? '').trim(),
     titleZh: String(raw.titleZh ?? existing?.titleZh ?? '').trim(),
     titleEn: String(raw.titleEn ?? existing?.titleEn ?? '').trim(),
+    // trim 只去首尾空白，中间换行保留
     bodyZh: String(raw.bodyZh ?? existing?.bodyZh ?? '').trim(),
     bodyEn: String(raw.bodyEn ?? existing?.bodyEn ?? '').trim(),
+    imageUrl: String(raw.imageUrl ?? existing?.imageUrl ?? '').trim(),
+    videoUrl: String(raw.videoUrl ?? existing?.videoUrl ?? '').trim(),
     sortOrder: Number(raw.sortOrder ?? existing?.sortOrder ?? 0),
     enabled: raw.enabled !== undefined ? Boolean(raw.enabled) : (existing?.enabled ?? true),
     createdAt: existing?.createdAt ?? raw.createdAt ?? t,
-    updatedAt: t,
+    updatedAt: touch || !existing ? t : (existing.updatedAt ?? t),
   };
 }
 
@@ -106,7 +132,16 @@ function readAll(): WellnessTip[] {
   try {
     const parsed = JSON.parse(fs.readFileSync(TIPS_FILE, 'utf-8')) as WellnessTip[];
     if (!Array.isArray(parsed) || parsed.length === 0) return seedFile();
-    return parsed.map((tip) => normalizeTip(tip, tip));
+    let dirty = false;
+    const tips = parsed.map((tip) => {
+      const before = String(tip.id ?? '').trim();
+      const normalized = normalizeTip(tip, tip, false);
+      if (!before || before !== normalized.id) dirty = true;
+      if (tip.imageUrl === undefined || tip.videoUrl === undefined) dirty = true;
+      return normalized;
+    });
+    if (dirty) writeAll(tips);
+    return tips;
   } catch {
     const seeded = seedFile();
     fs.writeFileSync(TIPS_FILE, JSON.stringify(seeded, null, 2), 'utf-8');
@@ -136,7 +171,8 @@ export function validateWellnessInput(
   if (!String(input.titleZh ?? '').trim()) return '请填写中文标题';
   if (!String(input.bodyZh ?? '').trim()) return '请填写中文正文';
   if (!String(input.tagZh ?? '').trim()) return '请填写中文标签';
-  if (isCreate && input.id && readAll().some((t) => t.id === input.id)) {
+  const id = String(input.id ?? '').trim();
+  if (isCreate && id && readAll().some((t) => t.id === id)) {
     return 'ID 已存在';
   }
   return null;
@@ -147,11 +183,17 @@ export function createWellnessTip(input: Partial<WellnessTip>): WellnessTip {
   if (err) throw new Error(err);
   const all = readAll();
   const maxOrder = all.reduce((m, t) => Math.max(m, t.sortOrder), -1);
-  const tip = normalizeTip({
-    ...input,
-    sortOrder: input.sortOrder ?? maxOrder + 1,
-    enabled: input.enabled !== false,
-  });
+  // 强制丢弃空 id，由 resolveId → newId()
+  const tip = normalizeTip(
+    {
+      ...input,
+      id: String(input.id ?? '').trim() || undefined,
+      sortOrder: input.sortOrder ?? maxOrder + 1,
+      enabled: input.enabled !== false,
+    } as Partial<WellnessTip>,
+    undefined,
+    true
+  );
   writeAll([...all, tip]);
   return tip;
 }
@@ -162,7 +204,11 @@ export function updateWellnessTip(id: string, input: Partial<WellnessTip>): Well
   if (idx < 0) return null;
   const err = validateWellnessInput({ ...all[idx], ...input }, false);
   if (err) throw new Error(err);
-  const updated = normalizeTip({ ...all[idx], ...input }, all[idx]);
+  const updated = normalizeTip(
+    { ...all[idx], ...input, id: all[idx].id },
+    all[idx],
+    true
+  );
   all[idx] = updated;
   writeAll(all);
   return updated;

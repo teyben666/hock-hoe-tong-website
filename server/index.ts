@@ -18,12 +18,14 @@ import { createWalkIn, getQueueBoard, getQueueStatusByPhone } from './queue.js';
 import { parsePatientIdentity } from './patientValidation.js';
 import { getPublicWellnessTips } from './wellnessTips.js';
 import { attachStaticSite, shouldServeStatic } from './serveStatic.js';
+import { UPLOADS_ROOT } from './wellnessUpload.js';
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3001;
 
 app.use(cors(getCorsOptions()));
-app.use(express.json());
+/** 养生上传用 base64，需提高 JSON 体积上限 */
+app.use(express.json({ limit: '35mb' }));
 
 app.get('/api/health', (_req, res) => {
   res.json({ ok: true, clinic: '福和堂 HOCK HOE TONG', since: 1987 });
@@ -47,6 +49,14 @@ app.get('/api/config', (_req, res) => {
 });
 
 app.use('/api/admin', adminRouter);
+
+/** 养生上传的图片/视频（须在 SPA 回退之前） */
+app.use(
+  '/uploads',
+  express.static(UPLOADS_ROOT, {
+    maxAge: process.env.NODE_ENV === 'production' ? '7d' : 0,
+  })
+);
 
 app.get('/api/slots', (req, res) => {
   const date = req.query.date as string;

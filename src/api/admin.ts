@@ -213,6 +213,17 @@ export async function staffDeleteWellnessTip(id: string): Promise<void> {
   await adminRequest(`/wellness/${id}`, { method: 'DELETE' });
 }
 
+export async function staffUploadWellnessMedia(
+  kind: 'image' | 'video',
+  dataUrl: string
+): Promise<string> {
+  const data = await adminRequest<{ url: string }>('/wellness/upload', {
+    method: 'POST',
+    body: JSON.stringify({ kind, dataUrl }),
+  });
+  return data.url;
+}
+
 export async function staffFetchQueueBoard(): Promise<QueueBoard> {
   const data = await adminRequest<{ board: QueueBoard }>('/queue/today');
   return data.board;

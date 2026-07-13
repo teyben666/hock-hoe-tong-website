@@ -11,3 +11,4 @@ server/data/clinic.db
 server/data/clinic.db-wal
 server/data/clinic.db-shm
 server/data/backups/
+server/data/uploads/

@@ -39,6 +39,7 @@ import {
   updateWellnessTip,
   deleteWellnessTip,
 } from './wellnessTips.js';
+import { saveWellnessDataUrl } from './wellnessUpload.js';
 import { buildAdminSummary } from './adminSummary.js';
 import { setHistoricalBaseline } from './clinicStats.js';
 import { buildAdminTrends, type TrendRange } from './adminTrends.js';
@@ -158,6 +159,18 @@ adminRouter.put('/schedule', requireStaff, (req, res) => {
 /** 养生知识 */
 adminRouter.get('/wellness', requireStaff, (_req, res) => {
   res.json({ tips: getAllWellnessTips() });
+});
+
+adminRouter.post('/wellness/upload', requireStaff, (req, res) => {
+  try {
+    const kind = req.body?.kind === 'video' ? 'video' : 'image';
+    const dataUrl = String(req.body?.dataUrl ?? '');
+    const saved = saveWellnessDataUrl(dataUrl, kind);
+    res.status(201).json({ success: true, url: saved.url, bytes: saved.bytes });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : '上传失败';
+    res.status(400).json({ error: msg });
+  }
 });
 
 adminRouter.post('/wellness', requireStaff, (req, res) => {

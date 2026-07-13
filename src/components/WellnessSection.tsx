@@ -1,12 +1,13 @@
 /**
  * 养生知识轮播（一条一屏，左右切换，约 30 秒自动下一条）
+ * 正文保留换行；**加粗**；可选图片/视频
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight, Leaf } from 'lucide-react';
 import { WELLNESS_SECTION } from '../data';
 import { fetchWellnessTips } from '../api';
-import { BilingualLine } from './BilingualLine';
+import { parseBoldMarkup } from '../utils/richText';
 import type { WellnessTip } from '../types';
 
 const AUTO_MS = 30_000;
@@ -85,20 +86,47 @@ export const WellnessSection: React.FC = () => {
               )}
             </div>
 
-            <BilingualLine
-              zh={current.titleZh}
-              en={current.titleEn}
-              zhClassName="font-serif font-bold text-[#10143A] text-base md:text-lg leading-snug"
-              enClassName="font-sans text-stone-500 text-xs mt-1"
-            />
+            <div>
+              <h3 className="font-serif font-bold text-[#10143A] text-base md:text-lg leading-snug">
+                {parseBoldMarkup(current.titleZh)}
+              </h3>
+              {current.titleEn ? (
+                <p className="font-sans text-stone-500 text-xs mt-1">
+                  {parseBoldMarkup(current.titleEn)}
+                </p>
+              ) : null}
+            </div>
 
-            <BilingualLine
-              zh={current.bodyZh}
-              en={current.bodyEn}
-              className="mt-4"
-              zhClassName="font-sans text-stone-600 text-[13px] md:text-sm leading-relaxed"
-              enClassName="font-sans text-stone-500 text-xs mt-2 leading-relaxed"
-            />
+            {(current.imageUrl || current.videoUrl) && (
+              <div className="mt-4 space-y-3">
+                {current.imageUrl ? (
+                  <img
+                    src={current.imageUrl}
+                    alt={current.titleZh}
+                    className="w-full max-h-64 object-cover rounded-xl border border-stone-200/60"
+                  />
+                ) : null}
+                {current.videoUrl ? (
+                  <video
+                    src={current.videoUrl}
+                    controls
+                    playsInline
+                    className="w-full max-h-72 rounded-xl border border-stone-200/60 bg-black"
+                  />
+                ) : null}
+              </div>
+            )}
+
+            <div className="mt-4">
+              <p className="font-sans text-stone-600 text-[13px] md:text-sm leading-relaxed whitespace-pre-line">
+                {parseBoldMarkup(current.bodyZh)}
+              </p>
+              {current.bodyEn ? (
+                <p className="font-sans text-stone-500 text-xs mt-2 leading-relaxed whitespace-pre-line">
+                  {parseBoldMarkup(current.bodyEn)}
+                </p>
+              ) : null}
+            </div>
 
             <p className="font-sans text-[11px] text-stone-400 mt-4 pt-3 border-t border-stone-200/40">
               {WELLNESS_SECTION.disclaimer}
@@ -126,7 +154,7 @@ export const WellnessSection: React.FC = () => {
               <div className="flex justify-center gap-1.5 mt-4">
                 {tips.map((t, i) => (
                   <button
-                    key={t.id}
+                    key={t.id || `tip-${i}`}
                     type="button"
                     onClick={() => setIndex(i)}
                     className={`h-2 rounded-full transition-all ${

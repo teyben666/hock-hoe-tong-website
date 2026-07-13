@@ -160,6 +160,8 @@ export interface WellnessTip {
   titleEn: string;
   bodyZh: string;
   bodyEn: string;
+  imageUrl?: string;
+  videoUrl?: string;
   sortOrder: number;
   enabled: boolean;
   createdAt?: string;
