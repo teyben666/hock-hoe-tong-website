@@ -7,6 +7,7 @@ import React, { useEffect } from 'react';
 import { DOCTORS, DEFAULTS } from '../data';
 import { Star, Award, CalendarDays, Stethoscope } from 'lucide-react';
 import { NamecardBackdrop } from './NamecardBackdrop';
+import { parseBoldMarkup } from '../utils/richText';
 
 interface PhysicianSectionProps {
   onSelectDoctor: (doctorId: string) => void;
@@ -71,7 +72,9 @@ export const PhysicianSection: React.FC<PhysicianSectionProps> = ({
               <p className="font-serif text-sm text-gold font-medium mt-0.5">{doc.title}</p>
             </div>
 
-            <p className="font-sans text-stone-600 text-sm leading-relaxed">{doc.intro}</p>
+            <p className="font-sans text-stone-600 text-sm leading-relaxed">
+              {parseBoldMarkup(doc.intro)}
+            </p>
 
             <div className="flex flex-wrap gap-2 items-center">
               <span className="font-serif text-stone-500 text-xs flex items-center gap-1 mr-1 w-full sm:w-auto">

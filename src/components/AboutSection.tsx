@@ -32,11 +32,19 @@ export const AboutSection: React.FC = () => {
           </div>
         </div>
 
-        <div className="space-y-4 md:space-y-5 text-[#10143A]/90">
-          {ABOUT_COPY.paragraphs.map((paragraph, index) => (
-            <p key={index} className="m-0 font-serif text-[15px] md:text-base leading-relaxed">
-              {parseBoldMarkup(paragraph)}
-            </p>
+        <div className="space-y-6 md:space-y-7 text-[#10143A]/90">
+          {ABOUT_COPY.sections.map((section) => (
+            <section key={section.titleZh} className="space-y-2">
+              <h3 className="font-serif text-base md:text-lg font-bold text-[#10143A] border-l-2 border-[#FDD772] pl-3">
+                {section.titleZh}
+                <span className="block font-sans text-xs font-semibold text-[#10143A]/50 mt-0.5 tracking-wide">
+                  {section.titleEn}
+                </span>
+              </h3>
+              <p className="m-0 font-serif text-[15px] md:text-base leading-relaxed">
+                {parseBoldMarkup(section.body)}
+              </p>
+            </section>
           ))}
         </div>
 
