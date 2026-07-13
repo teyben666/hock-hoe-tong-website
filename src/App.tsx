@@ -18,6 +18,7 @@ import { TCMNotice } from './components/TCMNotice';
 import { Reservation } from './types';
 import { DEFAULTS, DEFAULT_DOCTOR_ID, BOOKING_COPY, ABOUT_COPY } from './data';
 import { BilingualLine } from './components/BilingualLine';
+import { isSearchBot } from './utils/isSearchBot';
 import {
   ShieldCheck,
   CalendarRange,
@@ -30,7 +31,8 @@ import {
 const TRUST_ICONS: LucideIcon[] = [ShieldCheck, CalendarRange, Sparkles, Smartphone];
 
 export default function App() {
-  const [loading, setLoading] = useState(true);
+  /** Skip splash for crawlers so main text is available immediately for indexing */
+  const [loading, setLoading] = useState(() => !isSearchBot());
   const [selectedDoctorId, setSelectedDoctorId] = useState<string>(DEFAULT_DOCTOR_ID);
   const [selectedTreatmentId, setSelectedTreatmentId] = useState<string>('');
   const [latestBooking, setLatestBooking] = useState<Reservation | null>(null);

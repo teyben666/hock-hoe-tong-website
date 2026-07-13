@@ -1,0 +1,10 @@
+# Allow search engines to crawl the public clinic website
+User-agent: *
+Allow: /
+
+# Staff / internal tools — no need to index
+Disallow: /admin
+Disallow: /api/
+Disallow: /queue-display
+
+Sitemap: https://hockhoetong.dpdns.org/sitemap.xml

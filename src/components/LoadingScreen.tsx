@@ -6,6 +6,7 @@
 import React, { useEffect, useState } from 'react';
 import { Logo } from './Logo';
 import { DEFAULTS } from '../data';
+import { isSearchBot } from '../utils/isSearchBot';
 
 interface LoadingScreenProps {
   onComplete: () => void;
@@ -16,8 +17,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
   const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduced) {
+    if (isSearchBot() || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       onComplete();
       return;
     }
