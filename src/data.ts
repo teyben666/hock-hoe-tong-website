@@ -96,7 +96,7 @@ export const BOOKING_COPY = {
       },
       {
         zh: '每两周的周三与周四休息',
-        en: 'Closed every other Wednesday & Thursday',
+        en: 'Closed every other on Wednesday & Thursday',
       },
       {
         zh: '系统仅显示当前时间之后的可预约时段',
@@ -110,11 +110,11 @@ export const BOOKING_COPY = {
     bodyZh:
       '如您对治疗方案、收费或药材零售有任何疑问，除了自助预约外，亦可直接通过电话客服与我们联系。',
     bodyEn:
-      'If you have any questions regarding treatment plans, fees, or herbal retail, you may contact our customer service hotline directly in addition to using the self-service booking system.',
+      'If you have any inquiries regarding treatment plans, fees, or herbal retail, you may contact our customer service hotline directly in addition to using the self-service booking system.',
     hoursZh: '中药店每天 9:30 AM – 7:30 PM；门诊 10:00 AM – 7:30 PM',
     hoursEn: 'Shop daily 9:30 AM – 7:30 PM; Consultation 10:00 AM – 7:30 PM',
     restZh: '每两周的周三与周四休息',
-    restEn: 'Closed every other Wednesday & Thursday',
+    restEn: 'Closed every other on Wednesday & Thursday',
     callZh: '拨号',
     callEn: 'Call',
   },
