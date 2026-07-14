@@ -1,19 +1,24 @@
 /**
- * About 区相册轮播（约 30 秒自动切换；Admin 可编辑）
+ * About 区相册轮播（约 30 秒自动切换；可左右滑 / 按钮；点图看大图）
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { fetchAboutGallery } from '../api';
 import { ABOUT_COPY, DEFAULTS } from '../data';
 import type { AboutGalleryItem } from '../types';
+import { useHorizontalSwipe } from '../hooks/useHorizontalSwipe';
+import { ImageLightbox, useLightboxTap, type LightboxItem } from './ImageLightbox';
 
 const AUTO_MS = 30_000;
 
 export const AboutGalleryCarousel: React.FC = () => {
   const [items, setItems] = useState<AboutGalleryItem[]>([]);
   const [index, setIndex] = useState(0);
+  const [pauseToken, setPauseToken] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   useEffect(() => {
     fetchAboutGallery()
@@ -46,23 +51,58 @@ export const AboutGalleryCarousel: React.FC = () => {
   const safeIndex = count > 0 ? ((index % count) + count) % count : 0;
   const current = count > 0 ? items[safeIndex] : null;
 
+  const lightboxItems: LightboxItem[] = useMemo(
+    () =>
+      items.map((item) => ({
+        src: item.imageUrl,
+        alt:
+          item.captionZh ||
+          `${DEFAULTS.CLINIC_NAME} ${DEFAULTS.CLINIC_ENGLISH}`,
+        caption: item.captionZh || item.captionEn || undefined,
+      })),
+    [items]
+  );
+
+  const bumpPause = useCallback(() => setPauseToken((t) => t + 1), []);
+
   const go = useCallback(
     (delta: number) => {
       if (count <= 1) return;
       setIndex((i) => (i + delta + count) % count);
+      bumpPause();
     },
-    [count]
+    [count, bumpPause]
   );
 
+  const goTo = useCallback(
+    (i: number) => {
+      setIndex(i);
+      bumpPause();
+    },
+    [bumpPause]
+  );
+
+  const openLightbox = useCallback(() => {
+    setLightboxIndex(safeIndex);
+    setLightboxOpen(true);
+    bumpPause();
+  }, [safeIndex, bumpPause]);
+
+  const imageTap = useLightboxTap(openLightbox);
+
   useEffect(() => {
-    if (count <= 1) return;
-    const timer = window.setInterval(() => go(1), AUTO_MS);
+    if (count <= 1 || lightboxOpen) return;
+    const timer = window.setInterval(() => {
+      setIndex((i) => (i + 1) % count);
+    }, AUTO_MS);
     return () => window.clearInterval(timer);
-  }, [count, go]);
+  }, [count, pauseToken, lightboxOpen]);
 
   useEffect(() => {
     if (index >= count && count > 0) setIndex(0);
   }, [count, index]);
+
+  const swipe = useHorizontalSwipe(go, count > 1 && !lightboxOpen);
 
   if (loading) {
     return (
@@ -77,18 +117,29 @@ export const AboutGalleryCarousel: React.FC = () => {
   if (!current) return null;
 
   return (
-    <div className="relative flex justify-center">
-      <div className="bg-black rounded-2xl px-4 py-3 sm:px-8 sm:py-4 shadow-lg ring-2 ring-[#FDD772]/30 w-full max-w-xl overflow-hidden">
-        <div className="relative aspect-[16/10] w-full flex items-center justify-center">
+    <div className="relative flex justify-center pb-2">
+      <div
+        className="bg-black rounded-2xl px-4 py-3 sm:px-8 sm:py-4 shadow-lg ring-2 ring-[#FDD772]/30 w-full max-w-xl overflow-hidden select-none"
+        onTouchStart={swipe.onTouchStart}
+        onTouchEnd={swipe.onTouchEnd}
+        style={swipe.style}
+      >
+        <button
+          type="button"
+          className="relative aspect-[16/10] w-full flex items-center justify-center cursor-zoom-in focus:outline-none"
+          aria-label="查看大图"
+          {...imageTap}
+        >
           <img
             src={current.imageUrl}
             alt={
               current.captionZh ||
               `${DEFAULTS.CLINIC_NAME} ${DEFAULTS.CLINIC_ENGLISH}`
             }
-            className="max-w-full max-h-full w-full h-full object-contain"
+            className="max-w-full max-h-full w-full h-full object-contain pointer-events-none"
+            draggable={false}
           />
-        </div>
+        </button>
         {(current.captionZh || current.captionEn) && (
           <div className="mt-2 text-center pb-1">
             {current.captionZh ? (
@@ -124,7 +175,7 @@ export const AboutGalleryCarousel: React.FC = () => {
               <button
                 key={item.id}
                 type="button"
-                onClick={() => setIndex(i)}
+                onClick={() => goTo(i)}
                 className={`h-1.5 rounded-full transition-all ${
                   i === safeIndex ? 'w-5 bg-[#FDD772]' : 'w-1.5 bg-stone-300'
                 }`}
@@ -134,6 +185,15 @@ export const AboutGalleryCarousel: React.FC = () => {
           </div>
         </>
       )}
+
+      {lightboxOpen && lightboxItems.length > 0 ? (
+        <ImageLightbox
+          items={lightboxItems}
+          index={lightboxIndex}
+          onClose={() => setLightboxOpen(false)}
+          onIndexChange={setLightboxIndex}
+        />
+      ) : null}
     </div>
   );
 };

@@ -1,13 +1,14 @@
 /**
- * 养生知识轮播（一条一屏，左右切换，约 30 秒自动下一条）
- * 正文保留换行；**加粗**；可选图片/视频
+ * 养生知识轮播（一条一屏；左右滑 / 按钮；点图看大图；约 30 秒自动下一条）
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight, Leaf } from 'lucide-react';
 import { WELLNESS_SECTION } from '../data';
 import { fetchWellnessTips } from '../api';
 import { parseBoldMarkup } from '../utils/richText';
+import { useHorizontalSwipe } from '../hooks/useHorizontalSwipe';
+import { ImageLightbox, useLightboxTap, type LightboxItem } from './ImageLightbox';
 import type { WellnessTip } from '../types';
 
 const AUTO_MS = 30_000;
@@ -15,7 +16,10 @@ const AUTO_MS = 30_000;
 export const WellnessSection: React.FC = () => {
   const [tips, setTips] = useState<WellnessTip[]>([]);
   const [index, setIndex] = useState(0);
+  const [pauseToken, setPauseToken] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   useEffect(() => {
     fetchWellnessTips()
@@ -28,23 +32,61 @@ export const WellnessSection: React.FC = () => {
   const safeIndex = count > 0 ? ((index % count) + count) % count : 0;
   const current = count > 0 ? tips[safeIndex] : null;
 
-  const go = useCallback(
-    (delta: number) => {
-      if (count === 0) return;
-      setIndex((i) => (i + delta + count) % count);
-    },
-    [count]
+  /** 同组：所有带图的养生条目 */
+  const lightboxItems: LightboxItem[] = useMemo(
+    () =>
+      tips
+        .filter((t) => t.imageUrl)
+        .map((t) => ({
+          src: t.imageUrl!,
+          alt: t.titleZh,
+          caption: t.titleZh,
+        })),
+    [tips]
   );
 
+  const bumpPause = useCallback(() => setPauseToken((t) => t + 1), []);
+
+  const go = useCallback(
+    (delta: number) => {
+      if (count <= 1) return;
+      setIndex((i) => (i + delta + count) % count);
+      bumpPause();
+    },
+    [count, bumpPause]
+  );
+
+  const goTo = useCallback(
+    (i: number) => {
+      setIndex(i);
+      bumpPause();
+    },
+    [bumpPause]
+  );
+
+  const openLightbox = useCallback(() => {
+    if (!current?.imageUrl) return;
+    const imgIndex = lightboxItems.findIndex((item) => item.src === current.imageUrl);
+    setLightboxIndex(imgIndex >= 0 ? imgIndex : 0);
+    setLightboxOpen(true);
+    bumpPause();
+  }, [current, lightboxItems, bumpPause]);
+
+  const imageTap = useLightboxTap(openLightbox);
+
   useEffect(() => {
-    if (count <= 1) return;
-    const timer = window.setInterval(() => go(1), AUTO_MS);
+    if (count <= 1 || lightboxOpen) return;
+    const timer = window.setInterval(() => {
+      setIndex((i) => (i + 1) % count);
+    }, AUTO_MS);
     return () => window.clearInterval(timer);
-  }, [count, go]);
+  }, [count, pauseToken, lightboxOpen]);
 
   useEffect(() => {
     if (index >= count && count > 0) setIndex(0);
   }, [count, index]);
+
+  const swipe = useHorizontalSwipe(go, count > 1 && !lightboxOpen);
 
   return (
     <div id="feedback" className="space-y-6 scroll-mt-24">
@@ -71,7 +113,12 @@ export const WellnessSection: React.FC = () => {
         </div>
       ) : (
         <div className="relative">
-          <div className="bg-[#F5F3EF]/60 rounded-2xl p-5 md:p-6 border border-stone-200/50 shadow-sm min-h-[200px]">
+          <div
+            className="bg-[#F5F3EF]/60 rounded-2xl p-5 md:p-6 border border-stone-200/50 shadow-sm min-h-[200px] select-none"
+            onTouchStart={swipe.onTouchStart}
+            onTouchEnd={swipe.onTouchEnd}
+            style={swipe.style}
+          >
             <div className="flex items-start justify-between gap-3 mb-3">
               <span className="inline-flex items-center gap-1.5 font-sans text-[11px] text-[#10143A]/85 bg-[#DEEAF4]/40 border border-[#10143A]/10 px-3 py-1 rounded-full">
                 <Leaf size={12} className="icon-gold" />
@@ -100,11 +147,19 @@ export const WellnessSection: React.FC = () => {
             {(current.imageUrl || current.videoUrl) && (
               <div className="mt-4 space-y-3">
                 {current.imageUrl ? (
-                  <img
-                    src={current.imageUrl}
-                    alt={current.titleZh}
-                    className="w-full max-h-64 object-cover rounded-xl border border-stone-200/60"
-                  />
+                  <button
+                    type="button"
+                    className="block w-full cursor-zoom-in focus:outline-none"
+                    aria-label="查看大图"
+                    {...imageTap}
+                  >
+                    <img
+                      src={current.imageUrl}
+                      alt={current.titleZh}
+                      className="w-full max-h-64 object-cover rounded-xl border border-stone-200/60 pointer-events-none"
+                      draggable={false}
+                    />
+                  </button>
                 ) : null}
                 {current.videoUrl ? (
                   <video
@@ -156,7 +211,7 @@ export const WellnessSection: React.FC = () => {
                   <button
                     key={t.id || `tip-${i}`}
                     type="button"
-                    onClick={() => setIndex(i)}
+                    onClick={() => goTo(i)}
                     className={`h-2 rounded-full transition-all ${
                       i === safeIndex ? 'w-6 bg-[#FDD772]' : 'w-2 bg-stone-300 hover:bg-stone-400'
                     }`}
@@ -168,6 +223,15 @@ export const WellnessSection: React.FC = () => {
           )}
         </div>
       )}
+
+      {lightboxOpen && lightboxItems.length > 0 ? (
+        <ImageLightbox
+          items={lightboxItems}
+          index={lightboxIndex}
+          onClose={() => setLightboxOpen(false)}
+          onIndexChange={setLightboxIndex}
+        />
+      ) : null}
     </div>
   );
 };

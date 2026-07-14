@@ -3,10 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { TREATMENTS_SECTION } from '../data';
 import * as Icons from 'lucide-react';
 import { useTreatments } from '../hooks/useTreatments';
+import { ImageLightbox, type LightboxItem } from './ImageLightbox';
 
 interface TreatmentsPanelProps {
   onSelectTreatment: (treatmentId: string) => void;
@@ -24,6 +25,26 @@ export const TreatmentsPanel: React.FC<TreatmentsPanelProps> = ({
   selectedId,
 }) => {
   const { treatments, loading } = useTreatments(true);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+
+  const lightboxItems: LightboxItem[] = useMemo(
+    () =>
+      treatments
+        .filter((t) => t.imageUrl)
+        .map((t) => ({
+          src: t.imageUrl!,
+          alt: t.name,
+          caption: t.name,
+        })),
+    [treatments]
+  );
+
+  const openTreatmentImage = (imageUrl: string) => {
+    const i = lightboxItems.findIndex((item) => item.src === imageUrl);
+    setLightboxIndex(i >= 0 ? i : 0);
+    setLightboxOpen(true);
+  };
 
   return (
     <div id="treatments" className="space-y-6 scroll-mt-24">
@@ -89,11 +110,19 @@ export const TreatmentsPanel: React.FC<TreatmentsPanelProps> = ({
                 {(t.imageUrl || t.videoUrl) && (
                   <div className="mt-4 space-y-3 sm:pl-14">
                     {t.imageUrl ? (
-                      <img
-                        src={t.imageUrl}
-                        alt={t.name}
-                        className="w-full max-h-52 object-cover rounded-xl border border-stone-200/60"
-                      />
+                      <button
+                        type="button"
+                        className="block w-full cursor-zoom-in focus:outline-none"
+                        aria-label={`查看${t.name}大图`}
+                        onClick={() => openTreatmentImage(t.imageUrl!)}
+                      >
+                        <img
+                          src={t.imageUrl}
+                          alt={t.name}
+                          className="w-full max-h-52 object-cover rounded-xl border border-stone-200/60 pointer-events-none"
+                          draggable={false}
+                        />
+                      </button>
                     ) : null}
                     {t.videoUrl ? (
                       <video
@@ -135,6 +164,15 @@ export const TreatmentsPanel: React.FC<TreatmentsPanelProps> = ({
           })}
         </div>
       )}
+
+      {lightboxOpen && lightboxItems.length > 0 ? (
+        <ImageLightbox
+          items={lightboxItems}
+          index={lightboxIndex}
+          onClose={() => setLightboxOpen(false)}
+          onIndexChange={setLightboxIndex}
+        />
+      ) : null}
     </div>
   );
 };
