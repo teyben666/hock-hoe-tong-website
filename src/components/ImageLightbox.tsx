@@ -1,5 +1,5 @@
 /**
- * 全屏图片预览：遮罩 / × 关闭；多图时箭头与左右滑
+ * 全屏图片预览：整张图适配屏幕并居中；遮罩 / × 关闭；多图时箭头与左右滑
  */
 
 import React, { useCallback, useEffect, useRef } from 'react';
@@ -62,7 +62,7 @@ export const ImageLightbox: React.FC<ImageLightboxProps> = ({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 p-3 sm:p-6"
+      className="fixed inset-0 z-[100] bg-black/90"
       role="dialog"
       aria-modal="true"
       aria-label="图片预览"
@@ -70,8 +70,11 @@ export const ImageLightbox: React.FC<ImageLightboxProps> = ({
     >
       <button
         type="button"
-        onClick={onClose}
-        className="absolute top-3 right-3 z-20 w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center"
+        onClick={(e) => {
+          e.stopPropagation();
+          onClose();
+        }}
+        className="absolute top-3 right-3 z-30 w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center"
         aria-label="关闭"
       >
         <X size={22} />
@@ -85,7 +88,7 @@ export const ImageLightbox: React.FC<ImageLightboxProps> = ({
               e.stopPropagation();
               go(-1);
             }}
-            className="absolute left-2 sm:left-4 z-20 w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center"
+            className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center"
             aria-label="上一张"
           >
             <ChevronLeft size={22} />
@@ -96,33 +99,46 @@ export const ImageLightbox: React.FC<ImageLightboxProps> = ({
               e.stopPropagation();
               go(1);
             }}
-            className="absolute right-2 sm:right-4 z-20 w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center"
+            className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center"
             aria-label="下一张"
           >
             <ChevronRight size={22} />
           </button>
-          <p className="absolute bottom-4 left-0 right-0 text-center text-white/70 text-xs font-mono z-20 pointer-events-none">
-            {safeIndex + 1} / {count}
-          </p>
         </>
       )}
 
+      {/*
+        预览安全区：绝对定位在视口内，四周留钮/说明空间。
+        图片用 absolute + max-w/h-full + object-contain，横竖/16:9 都能完整居中。
+      */}
       <div
-        className="relative max-w-[min(96vw,1100px)] max-h-[88vh] w-full flex flex-col items-center"
+        className="absolute z-10 left-12 right-12 top-14 bottom-16 sm:left-16 sm:right-16"
         onClick={(e) => e.stopPropagation()}
         onTouchStart={swipe.onTouchStart}
         onTouchEnd={swipe.onTouchEnd}
         style={swipe.style}
       >
         <img
+          key={current.src}
           src={current.src}
           alt={current.alt || '预览图'}
-          className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl select-none"
+          className="absolute inset-0 m-auto max-w-full max-h-full w-auto h-auto object-contain select-none rounded-md shadow-2xl"
           draggable={false}
         />
+      </div>
+
+      <div
+        className="absolute bottom-3 left-0 right-0 z-20 px-4 text-center pointer-events-none"
+        onClick={(e) => e.stopPropagation()}
+      >
         {current.caption ? (
-          <p className="mt-3 text-center text-white/85 text-sm font-serif max-w-lg px-2">
+          <p className="text-white/90 text-sm font-serif leading-snug line-clamp-2 max-w-lg mx-auto">
             {current.caption}
+          </p>
+        ) : null}
+        {count > 1 ? (
+          <p className="text-white/55 text-xs font-mono mt-0.5">
+            {safeIndex + 1} / {count}
           </p>
         ) : null}
       </div>
