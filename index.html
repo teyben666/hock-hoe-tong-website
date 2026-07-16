@@ -6,11 +6,23 @@
     <meta name="description" content="福和堂 HOCK HOE TONG — 自1987年传承的中医馆，辨证施治，一人一方。在线预约与电话预约。" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://hockhoetong.com/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:url" content="https://hockhoetong.com/" />
+    <meta property="og:title" content="福和堂 HOCK HOE TONG | 中医就诊预约" />
+    <meta property="og:description" content="福和堂 HOCK HOE TONG — 自1987年传承的中医馆，辨证施治，一人一方。在线预约与电话预约。" />
+    <meta property="og:site_name" content="福和堂 HOCK HOE TONG" />
     <title>福和堂 HOCK HOE TONG | 中医就诊预约</title>
     <link rel="icon" href="/logo.png" type="image/png" />
   </head>
   <body>
-    <div id="root"></div>
+    <!--
+      SEO：构建时 scripts/prerender-home.mjs 会把完整首页正文注入 #root。
+      React 客户端挂载后替换为交互应用，预约等功能不受影响。
+    -->
+    <div id="root">
+      <h1>福和堂 HOCK HOE TONG — 中医就诊预约</h1>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

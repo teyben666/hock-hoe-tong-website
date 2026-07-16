@@ -7,12 +7,12 @@ import { Doctor, Treatment } from './types';
 
 /** 门店招牌信息 — HOCK HOE TONG 福和堂 (Est. 1987) */
 export const DEFAULTS = {
-  PHONE_NUMBER: import.meta.env.VITE_CLINIC_PHONE || '013-6268626',
+  PHONE_NUMBER: import.meta.env?.VITE_CLINIC_PHONE || '013-6268626',
   PHONE_TEL:
-    import.meta.env.VITE_CLINIC_PHONE?.replace(/[^\d+]/g, '') || '60136268626',
+    import.meta.env?.VITE_CLINIC_PHONE?.replace(/[^\d+]/g, '') || '60136268626',
   /** 顾客点击电话/预约按钮 → WhatsApp（非 tel: 拨号） */
   WHATSAPP_URL:
-    import.meta.env.VITE_WHATSAPP_URL || 'https://wa.me/qr/Z5GFCPPORNDIK1',
+    import.meta.env?.VITE_WHATSAPP_URL || 'https://wa.me/qr/Z5GFCPPORNDIK1',
   CLINIC_NAME: '福和堂',
   CLINIC_ENGLISH: 'HOCK HOE TONG',
   CLINIC_MALAY: 'KEDAI UBAT CINA',
@@ -37,7 +37,7 @@ export const DEFAULTS = {
     '三十余载诚信经营，甄选优质人参、冬虫草、枸杞、红枣等中草药，传承中医药文化，守护大众健康。',
   HERO_CREDENTIAL: '上海中医药大学硕士 • 马来西亚合法注册中医师',
   HERO_CLOSING: '专业医师亲诊，传承岐黄智慧，精诚守护大众健康。',
-  EMAIL: import.meta.env.VITE_CLINIC_EMAIL || 'hockhoetong1987@gmail.com',
+  EMAIL: import.meta.env?.VITE_CLINIC_EMAIL || 'hockhoetong1987@gmail.com',
   COPYRIGHT_YEAR: '1987',
 };
 
