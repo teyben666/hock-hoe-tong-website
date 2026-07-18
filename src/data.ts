@@ -331,8 +331,8 @@ export const QUEUE_WALKIN_COPY = {
     skipped: { zh: '已过号', en: 'Missed turn' },
   },
   hints: {
-    notCallableZh: '尚未到预约时段，请留意大屏',
-    notCallableEn: 'Your appointment time has not arrived yet — watch the display',
+    notCallableZh: '请至柜台签到后排队等候',
+    notCallableEn: 'Please check in at the counter to join the queue',
     nextUpZh: '即将轮到您',
     nextUpEn: 'You are next',
     aheadZh: (n: number) => `前面约 ${n} 位`,

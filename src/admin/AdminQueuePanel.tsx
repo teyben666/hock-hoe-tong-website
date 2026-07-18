@@ -37,7 +37,7 @@ const emptyWalkInIdentity: PatientIdentityValues = {
 };
 
 const MODE_LABELS: Record<QueueCallMode, string> = {
-  standard: '标准（到点预约优先）',
+  standard: '标准（预约优先于现场）',
   appointment: '预约优先',
   walkin: '现场优先',
 };
@@ -321,7 +321,7 @@ export const AdminQueuePanel: React.FC<AdminQueuePanelProps> = ({ onMessage }) =
                 onMessage(
                   r.booking
                     ? `已叫预约 ${r.booking.queueCode}`
-                    : r.message ?? '暂无到点预约'
+                    : r.message ?? '暂无预约'
                 );
               })
             }
@@ -469,7 +469,7 @@ export const AdminQueuePanel: React.FC<AdminQueuePanelProps> = ({ onMessage }) =
 
       <div className="bg-white rounded-2xl p-5 shadow-sm border">
         <h3 className="font-serif font-bold text-stone-800 mb-2">
-          预约等候（已到点）· {board?.waitingAppointment.length ?? 0}
+          预约等候 · {board?.waitingAppointment.length ?? 0}
         </h3>
         <ul>
           {(board?.waitingAppointment ?? []).map((row) =>
@@ -594,7 +594,7 @@ export const AdminQueuePanel: React.FC<AdminQueuePanelProps> = ({ onMessage }) =
 
       <div className="bg-white rounded-2xl p-5 shadow-sm border">
         <h3 className="font-serif font-bold text-stone-800 mb-2">
-          预约未到点 / 未签到 · {board?.upcomingAppointment.length ?? 0}
+          预约未签到 · {board?.upcomingAppointment.length ?? 0}
         </h3>
         <ul>
           {(board?.upcomingAppointment ?? []).map((row) =>

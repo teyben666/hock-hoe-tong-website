@@ -73,11 +73,13 @@ export function maskName(name: string): string {
   return `${t[0]}*${t[t.length - 1]}`;
 }
 
-function isAppointmentCallable(b: BookingRecord, nowMinutes: number): boolean {
-  if (normalizeSource(b) !== 'appointment' || !b.timeSlot || b.timeSlot === 'walk-in') {
-    return false;
-  }
-  return timeToMinutes(b.timeSlot) <= nowMinutes;
+/** 已签到的预约均可叫号（含早到）；不再卡「到点」 */
+function isAppointmentInCallPool(b: BookingRecord): boolean {
+  return (
+    normalizeSource(b) === 'appointment' &&
+    !!b.timeSlot &&
+    b.timeSlot !== 'walk-in'
+  );
 }
 
 function sortAppointments(a: BookingRecord, b: BookingRecord): number {
@@ -95,7 +97,6 @@ function todayActive(): BookingRecord[] {
 }
 
 function pickNext(mode: QueueCallMode): BookingRecord | null {
-  const { minutes } = getClinicNow();
   const all = todayActive();
 
   const priority = all.filter((b) => b.queueStatus === 'waiting' && b.queuePriority);
@@ -109,8 +110,7 @@ function pickNext(mode: QueueCallMode): BookingRecord | null {
     .filter(
       (b) =>
         b.queueStatus === 'waiting' &&
-        normalizeSource(b) === 'appointment' &&
-        isAppointmentCallable(b, minutes)
+        isAppointmentInCallPool(b)
     )
     .sort(sortAppointments);
 
@@ -316,7 +316,6 @@ export function requeueBooking(id: string): BookingRecord {
 }
 
 export function buildOrderedWaiting(): BookingRecord[] {
-  const { minutes } = getClinicNow();
   const all = todayActive();
   const ordered: BookingRecord[] = [];
   const seen = new Set<string>();
@@ -347,8 +346,7 @@ export function buildOrderedWaiting(): BookingRecord[] {
       .filter(
         (b) =>
           b.queueStatus === 'waiting' &&
-          normalizeSource(b) === 'appointment' &&
-          isAppointmentCallable(b, minutes)
+          isAppointmentInCallPool(b)
       )
       .sort(sortAppointments)
   );
@@ -364,7 +362,7 @@ export function buildOrderedWaiting(): BookingRecord[] {
 
 export function getQueueBoard(date?: string) {
   const d = date ?? getClinicToday();
-  const { minutes, dateStr } = getClinicNow();
+  const { minutes } = getClinicNow();
   const mode = getQueueCallMode();
   const all = getBookingsByDate(d).map(withDefaults);
 
@@ -378,8 +376,7 @@ export function getQueueBoard(date?: string) {
     .filter(
       (b) =>
         b.queueStatus === 'waiting' &&
-        normalizeSource(b) === 'appointment' &&
-        (d !== dateStr || isAppointmentCallable(b, minutes))
+        isAppointmentInCallPool(b)
     )
     .sort(sortAppointments);
 
@@ -387,16 +384,13 @@ export function getQueueBoard(date?: string) {
     .filter((b) => b.queueStatus === 'waiting' && normalizeSource(b) === 'walk_in')
     .sort(sortWalkIns);
 
+  /** 仅未签到的预约；已签到（含早到）一律进等候可叫号 */
   const upcomingAppointment = all
-    .filter((b) => {
-      if (normalizeSource(b) !== 'appointment') return false;
-      if (b.queueStatus === 'not_arrived' || !b.queueStatus) return true;
-      return (
-        b.queueStatus === 'waiting' &&
-        d === dateStr &&
-        !isAppointmentCallable(b, minutes)
-      );
-    })
+    .filter(
+      (b) =>
+        normalizeSource(b) === 'appointment' &&
+        (b.queueStatus === 'not_arrived' || !b.queueStatus)
+    )
     .sort(sortAppointments);
 
   const calledWaiting = called.filter((b) => b.queueStatus === 'called');
@@ -494,7 +488,6 @@ export function getQueueBoard(date?: string) {
 export function getQueueStatusByPhone(phone: string) {
   const normalized = phone.replace(/[\s-]/g, '');
   const today = getClinicToday();
-  const { minutes } = getClinicNow();
   const mine = getBookingsByDate(today)
     .map(withDefaults)
     .filter((b) => b.patientPhone.replace(/[\s-]/g, '') === normalized);
@@ -508,8 +501,8 @@ export function getQueueStatusByPhone(phone: string) {
 
   const entries = mine.map((b) => {
     const idx = ordered.findIndex((w) => w.id === b.id);
-    const callable =
-      normalizeSource(b) === 'walk_in' || isAppointmentCallable(b, minutes);
+    /** 已签到等候即可被叫（预约早到亦同） */
+    const callable = b.queueStatus === 'waiting';
     return {
       id: b.id,
       queueCode: b.queueCode,

@@ -442,7 +442,7 @@ adminRouter.post('/queue/call-next', requireStaff, (req, res) => {
 adminRouter.post('/queue/call-appointment', requireStaff, (_req, res) => {
   const result = callNext('appointment');
   if (!result.booking) {
-    return res.json({ success: false, message: '暂无到点预约可叫', mode: 'appointment' });
+    return res.json({ success: false, message: '暂无预约可叫', mode: 'appointment' });
   }
   res.json({ success: true, booking: result.booking, mode: 'appointment' });
 });
