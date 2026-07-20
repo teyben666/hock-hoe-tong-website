@@ -120,7 +120,7 @@ export default function App() {
               selectedId={selectedDoctorId}
             />
 
-            {/* 3.4 养生知识轮播 */}
+            {/* 3.4 中医知识库轮播 */}
             <WellnessSection />
           </div>
 

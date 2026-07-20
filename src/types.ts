@@ -177,6 +177,8 @@ export interface WellnessTip {
   videoUrl?: string;
   sortOrder: number;
   enabled: boolean;
+  /** 展开全文后是否显示「收起」；false = Facebook 式仅展开不可收起 */
+  allowCollapse?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }

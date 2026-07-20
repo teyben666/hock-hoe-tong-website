@@ -1,5 +1,5 @@
 /**
- * 店员后台：养生知识增删改（支持换行、**加粗**、图片裁剪压缩/视频）
+ * 店员后台：中医知识库增删改（支持换行、**加粗**、图片裁剪压缩/视频）
  */
 
 import React, { useEffect, useRef, useState } from 'react';
@@ -26,6 +26,7 @@ const emptyForm = (): Omit<WellnessTip, 'createdAt' | 'updatedAt'> => ({
   videoUrl: '',
   sortOrder: 0,
   enabled: true,
+  allowCollapse: true,
 });
 
 function readFileAsDataUrl(file: File): Promise<string> {
@@ -98,6 +99,7 @@ export const AdminWellnessPanel: React.FC<AdminWellnessPanelProps> = ({ onMessag
       videoUrl: tip.videoUrl || '',
       sortOrder: tip.sortOrder,
       enabled: tip.enabled,
+      allowCollapse: tip.allowCollapse !== false,
     });
     setLocalMsg('');
     scrollFormIntoView();
@@ -116,11 +118,11 @@ export const AdminWellnessPanel: React.FC<AdminWellnessPanelProps> = ({ onMessag
         const { id: _omitId, ...payload } = form;
         await staffCreateWellnessTip({ ...payload, id: '' });
         setLocalMsg('已新增');
-        onMessage?.('养生知识已新增');
+        onMessage?.('中医知识库已新增');
       } else if (editingId) {
         await staffUpdateWellnessTip(editingId, form);
         setLocalMsg('已保存');
-        onMessage?.('养生知识已保存');
+        onMessage?.('中医知识库已保存');
       }
       cancelEdit();
       load();
@@ -138,7 +140,7 @@ export const AdminWellnessPanel: React.FC<AdminWellnessPanelProps> = ({ onMessag
       setLocalMsg('该条目 ID 无效，请删除后重新新增');
       return;
     }
-    if (!confirm('确定删除这条养生知识？')) return;
+    if (!confirm('确定删除这条中医知识库？')) return;
     try {
       await staffDeleteWellnessTip(id);
       onMessage?.('已删除');
@@ -215,7 +217,7 @@ export const AdminWellnessPanel: React.FC<AdminWellnessPanelProps> = ({ onMessag
       {imageEditorSrc ? (
         <WellnessImageEditor
           imageSrc={imageEditorSrc}
-          previewTitle={form.titleZh || '养生知识预览'}
+          previewTitle={form.titleZh || '中医知识库预览'}
           onCancel={() => setImageEditorSrc(null)}
           onConfirm={handleImageEditorConfirm}
         />
@@ -224,7 +226,7 @@ export const AdminWellnessPanel: React.FC<AdminWellnessPanelProps> = ({ onMessag
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="font-serif font-bold text-stone-800 flex items-center gap-2">
           <Leaf size={18} className="text-[#FDD772]" />
-          养生知识
+          中医知识库
         </h2>
         <button
           type="button"
@@ -237,7 +239,8 @@ export const AdminWellnessPanel: React.FC<AdminWellnessPanelProps> = ({ onMessag
       </div>
 
       <p className="text-xs text-stone-500 leading-relaxed">
-        官网「养生知识」轮播每 30 秒自动切换；仅「显示」状态的条目会出现在前台。
+        官网「中医知识库」轮播每 30 秒自动切换；仅「显示」状态的条目会出现在前台。
+        正文过长时前台会显示「展开全文」；可勾选是否允许「收起」。
         正文可按 Enter 换行；用 <code className="bg-stone-100 px-1 rounded">**文字**</code> 加粗。
         图片可选裁剪（16:9 / 自由）并自动压缩；视频仅限大小上传。
       </p>
@@ -402,6 +405,20 @@ export const AdminWellnessPanel: React.FC<AdminWellnessPanelProps> = ({ onMessag
                 onChange={(e) => setForm((f) => ({ ...f, enabled: e.target.checked }))}
               />
               在官网显示
+            </label>
+            <label className="flex items-start gap-2 text-sm sm:col-span-2">
+              <input
+                type="checkbox"
+                className="mt-0.5"
+                checked={form.allowCollapse !== false}
+                onChange={(e) => setForm((f) => ({ ...f, allowCollapse: e.target.checked }))}
+              />
+              <span>
+                展开全文后显示「收起」
+                <span className="block text-[11px] text-stone-400 mt-0.5">
+                  取消勾选则类似 Facebook：点「展开全文」后不可再收起（换下一条会重置）
+                </span>
+              </span>
             </label>
           </div>
           <div className="flex flex-wrap gap-2">

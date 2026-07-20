@@ -16,7 +16,7 @@ const NAV_LINKS = [
   { id: 'about', zh: '药材店介绍', en: 'Store Introduction' },
   { id: 'doctors', zh: '医师介绍', en: 'TCM Practitioner Profile' },
   { id: 'treatments', zh: '治疗项目', en: 'Treatment Services' },
-  { id: 'feedback', zh: '养生知识', en: 'Wellness Knowledge' },
+  { id: 'feedback', zh: '中医知识库', en: 'TCM Knowledge Base' },
 ] as const;
 
 const navLinkClass =

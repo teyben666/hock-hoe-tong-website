@@ -499,7 +499,7 @@ export const TREATMENTS_SECTION = {
 
 export const WELLNESS_SECTION = {
   tagline: '顺时调养 · 日常养护',
-  title: '养生知识',
+  title: '中医知识库',
   intro:
     '以下内容仅供日常养生参考，不替代医师诊断与治疗；用药与针灸方案须经面诊后个体化制定。',
   disclaimer: '体质有别，若有不适或症状持续，请预约面诊辨证调理。',

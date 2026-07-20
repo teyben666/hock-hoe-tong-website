@@ -1,8 +1,9 @@
 /**
- * 养生知识轮播（一条一屏；左右滑 / 按钮；点图看大图；约 30 秒自动下一条）
+ * 中医知识库轮播（一条一屏；左右滑 / 按钮；点图看大图；约 30 秒自动下一条）
+ * 正文过长时 Facebook 式「展开全文」；后台可控制展开后是否显示「收起」
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, Leaf } from 'lucide-react';
 import { WELLNESS_SECTION } from '../data';
 import { fetchWellnessTips } from '../api';
@@ -20,6 +21,9 @@ export const WellnessSection: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [bodyExpanded, setBodyExpanded] = useState(false);
+  const [bodyOverflows, setBodyOverflows] = useState(false);
+  const bodyClampRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchWellnessTips()
@@ -31,6 +35,7 @@ export const WellnessSection: React.FC = () => {
   const count = tips.length;
   const safeIndex = count > 0 ? ((index % count) + count) % count : 0;
   const current = count > 0 ? tips[safeIndex] : null;
+  const allowCollapse = current?.allowCollapse !== false;
 
   /** 同组：所有带图的养生条目 */
   const lightboxItems: LightboxItem[] = useMemo(
@@ -46,6 +51,25 @@ export const WellnessSection: React.FC = () => {
   );
 
   const bumpPause = useCallback(() => setPauseToken((t) => t + 1), []);
+
+  /** 换条时收起正文 */
+  useEffect(() => {
+    setBodyExpanded(false);
+  }, [safeIndex, current?.id]);
+
+  /** 折叠态下检测是否超出行数 */
+  useLayoutEffect(() => {
+    if (bodyExpanded || !current) {
+      setBodyOverflows(false);
+      return;
+    }
+    const el = bodyClampRef.current;
+    if (!el) {
+      setBodyOverflows(false);
+      return;
+    }
+    setBodyOverflows(el.scrollHeight > el.clientHeight + 1);
+  }, [current?.id, current?.bodyZh, current?.bodyEn, bodyExpanded]);
 
   const go = useCallback(
     (delta: number) => {
@@ -74,13 +98,23 @@ export const WellnessSection: React.FC = () => {
 
   const imageTap = useLightboxTap(openLightbox);
 
+  const expandBody = useCallback(() => {
+    setBodyExpanded(true);
+    bumpPause();
+  }, [bumpPause]);
+
+  const collapseBody = useCallback(() => {
+    setBodyExpanded(false);
+    bumpPause();
+  }, [bumpPause]);
+
   useEffect(() => {
-    if (count <= 1 || lightboxOpen) return;
+    if (count <= 1 || lightboxOpen || bodyExpanded) return;
     const timer = window.setInterval(() => {
       setIndex((i) => (i + 1) % count);
     }, AUTO_MS);
     return () => window.clearInterval(timer);
-  }, [count, pauseToken, lightboxOpen]);
+  }, [count, pauseToken, lightboxOpen, bodyExpanded]);
 
   useEffect(() => {
     if (index >= count && count > 0) setIndex(0);
@@ -105,11 +139,11 @@ export const WellnessSection: React.FC = () => {
 
       {loading ? (
         <div className="rounded-2xl border border-stone-200/60 bg-[#F5F3EF]/60 p-8 text-center text-sm text-stone-500">
-          加载养生知识…
+          加载中医知识库…
         </div>
       ) : !current ? (
         <div className="rounded-2xl border border-stone-200/60 bg-[#F5F3EF]/60 p-8 text-center text-sm text-stone-500">
-          暂无养生知识，请于店员后台添加。
+          暂无中医知识库，请于店员后台添加。
         </div>
       ) : (
         <div className="relative">
@@ -173,13 +207,42 @@ export const WellnessSection: React.FC = () => {
             )}
 
             <div className="mt-4">
-              <p className="font-sans text-stone-600 text-[13px] md:text-sm leading-relaxed whitespace-pre-line">
-                {parseBoldMarkup(current.bodyZh)}
-              </p>
-              {current.bodyEn ? (
-                <p className="font-sans text-stone-500 text-xs mt-2 leading-relaxed whitespace-pre-line">
-                  {parseBoldMarkup(current.bodyEn)}
+              <div
+                ref={bodyClampRef}
+                className={bodyExpanded ? undefined : 'line-clamp-5'}
+              >
+                <p className="font-sans text-stone-600 text-[13px] md:text-sm leading-relaxed whitespace-pre-line">
+                  {parseBoldMarkup(current.bodyZh)}
                 </p>
+                {current.bodyEn ? (
+                  <p className="font-sans text-stone-500 text-xs mt-2 leading-relaxed whitespace-pre-line">
+                    {parseBoldMarkup(current.bodyEn)}
+                  </p>
+                ) : null}
+              </div>
+
+              {!bodyExpanded && bodyOverflows ? (
+                <button
+                  type="button"
+                  onClick={expandBody}
+                  onTouchStart={(e) => e.stopPropagation()}
+                  className="mt-1.5 font-sans text-[13px] font-medium text-[#10143A] hover:text-gold transition-colors"
+                >
+                  展开全文
+                  <span className="text-stone-400 font-normal ml-1.5 text-xs">See more</span>
+                </button>
+              ) : null}
+
+              {bodyExpanded && allowCollapse ? (
+                <button
+                  type="button"
+                  onClick={collapseBody}
+                  onTouchStart={(e) => e.stopPropagation()}
+                  className="mt-1.5 font-sans text-[13px] font-medium text-[#10143A] hover:text-gold transition-colors"
+                >
+                  收起
+                  <span className="text-stone-400 font-normal ml-1.5 text-xs">See less</span>
+                </button>
               ) : null}
             </div>
 

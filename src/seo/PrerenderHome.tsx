@@ -75,7 +75,7 @@ export function PrerenderHome(): React.ReactElement {
           ))}
         </section>
 
-        <section aria-label="养生知识">
+        <section aria-label="中医知识库">
           <h2>{WELLNESS_SECTION.title}</h2>
           <p>{WELLNESS_SECTION.tagline}</p>
           <p>{WELLNESS_SECTION.intro}</p>

@@ -128,7 +128,7 @@ export const AdminDashboardTrends: React.FC<AdminDashboardTrendsProps> = ({
           onClick={() => onTabChange('wellness')}
           className="text-[#10143A] font-medium hover:underline"
         >
-          养生知识：已启用 {summary.wellness.enabledCount}/{summary.wellness.totalCount} →
+          中医知识库：已启用 {summary.wellness.enabledCount}/{summary.wellness.totalCount} →
         </button>
         {summary.nextOffDay ? (
           <button

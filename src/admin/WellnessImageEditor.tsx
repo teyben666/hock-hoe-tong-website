@@ -1,5 +1,5 @@
 /**
- * 养生图片编辑：裁剪（16:9 / 自由）+ 卡片预览 + 自动压缩
+ * 中医知识库图片编辑：裁剪（16:9 / 自由）+ 卡片预览 + 自动压缩
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
@@ -20,7 +20,7 @@ interface WellnessImageEditorProps {
 
 export const WellnessImageEditor: React.FC<WellnessImageEditorProps> = ({
   imageSrc,
-  previewTitle = '养生知识预览',
+  previewTitle = '中医知识库预览',
   onCancel,
   onConfirm,
 }) => {
@@ -84,7 +84,7 @@ export const WellnessImageEditor: React.FC<WellnessImageEditorProps> = ({
         className="bg-white w-full sm:max-w-3xl sm:rounded-2xl shadow-xl max-h-[95vh] overflow-y-auto flex flex-col"
         role="dialog"
         aria-modal="true"
-        aria-label="裁剪养生图片"
+        aria-label="裁剪中医知识库图片"
       >
         <div className="flex items-center justify-between px-4 py-3 border-b sticky top-0 bg-white z-10">
           <h3 className="font-serif font-bold text-stone-800 text-sm sm:text-base">

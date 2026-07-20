@@ -168,7 +168,7 @@ adminRouter.put('/schedule', requireStaff, (req, res) => {
   res.json({ success: true, schedule: saved });
 });
 
-/** 养生知识 */
+/** 中医知识库 */
 adminRouter.get('/wellness', requireStaff, (_req, res) => {
   res.json({ tips: getAllWellnessTips() });
 });

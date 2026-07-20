@@ -1,5 +1,5 @@
 /**
- * 养生知识（JSON 持久化，Admin 可增删改）
+ * 中医知识库（JSON 持久化，Admin 可增删改）
  */
 
 import fs from 'fs';
@@ -24,6 +24,8 @@ export interface WellnessTip {
   videoUrl: string;
   sortOrder: number;
   enabled: boolean;
+  /** 展开全文后是否显示「收起」；false = 仅展开不可收起 */
+  allowCollapse: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -43,6 +45,7 @@ const SEED_TIPS: Omit<WellnessTip, 'createdAt' | 'updatedAt'>[] = [
     videoUrl: '',
     sortOrder: 0,
     enabled: true,
+    allowCollapse: true,
   },
   {
     id: 'w2',
@@ -58,6 +61,7 @@ const SEED_TIPS: Omit<WellnessTip, 'createdAt' | 'updatedAt'>[] = [
     videoUrl: '',
     sortOrder: 1,
     enabled: true,
+    allowCollapse: true,
   },
   {
     id: 'w3',
@@ -73,6 +77,7 @@ const SEED_TIPS: Omit<WellnessTip, 'createdAt' | 'updatedAt'>[] = [
     videoUrl: '',
     sortOrder: 2,
     enabled: true,
+    allowCollapse: true,
   },
 ];
 
@@ -112,6 +117,10 @@ function normalizeTip(
     videoUrl: String(raw.videoUrl ?? existing?.videoUrl ?? '').trim(),
     sortOrder: Number(raw.sortOrder ?? existing?.sortOrder ?? 0),
     enabled: raw.enabled !== undefined ? Boolean(raw.enabled) : (existing?.enabled ?? true),
+    allowCollapse:
+      raw.allowCollapse !== undefined
+        ? Boolean(raw.allowCollapse)
+        : (existing?.allowCollapse ?? true),
     createdAt: existing?.createdAt ?? raw.createdAt ?? t,
     updatedAt: touch || !existing ? t : (existing.updatedAt ?? t),
   };
@@ -138,6 +147,7 @@ function readAll(): WellnessTip[] {
       const normalized = normalizeTip(tip, tip, false);
       if (!before || before !== normalized.id) dirty = true;
       if (tip.imageUrl === undefined || tip.videoUrl === undefined) dirty = true;
+      if (tip.allowCollapse === undefined) dirty = true;
       return normalized;
     });
     if (dirty) writeAll(tips);
