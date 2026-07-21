@@ -7,6 +7,7 @@ import { TREATMENTS_SECTION } from '../data';
 import * as Icons from 'lucide-react';
 import { ChevronDown } from 'lucide-react';
 import { useTreatments } from '../hooks/useTreatments';
+import { useIsDesktop } from '../hooks/useMediaQuery';
 import { ImageLightbox, type LightboxItem } from './ImageLightbox';
 
 interface TreatmentsPanelProps {
@@ -28,11 +29,15 @@ export const TreatmentsPanel: React.FC<TreatmentsPanelProps> = ({
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const isDesktop = useIsDesktop();
 
-  /** 预约区选中某项目时，自动展开对应卡片 */
+  /**
+   * 预约区选中某项目时自动展开对应卡片 — 仅桌面（左右分栏）。
+   * 手机单列布局下展开会推移下方预约表单，造成滚动跳动，故不展开。
+   */
   useEffect(() => {
-    if (selectedId) setExpandedId(selectedId);
-  }, [selectedId]);
+    if (selectedId && isDesktop) setExpandedId(selectedId);
+  }, [selectedId, isDesktop]);
 
   const lightboxItems: LightboxItem[] = useMemo(
     () =>
