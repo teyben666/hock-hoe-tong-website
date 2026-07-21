@@ -10,6 +10,7 @@ import {
   WellnessTip,
   Treatment,
   AboutGalleryItem,
+  FaqItem,
 } from './types';
 
 const API_BASE = import.meta.env.VITE_API_URL || '';
@@ -57,6 +58,11 @@ export async function cancelBooking(id: string): Promise<void> {
 export async function fetchWellnessTips(): Promise<WellnessTip[]> {
   const data = await request<{ tips: WellnessTip[] }>('/api/wellness');
   return data.tips;
+}
+
+export async function fetchFaqs(): Promise<FaqItem[]> {
+  const data = await request<{ items: FaqItem[] }>('/api/faq');
+  return data.items;
 }
 
 export async function fetchAboutGallery(): Promise<AboutGalleryItem[]> {

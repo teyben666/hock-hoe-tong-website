@@ -10,6 +10,8 @@ import {
   TREATMENTS,
   TREATMENTS_SECTION,
   WELLNESS_SECTION,
+  FAQ_SECTION,
+  FAQ_SEED,
 } from '../data';
 
 function plainText(s: string): string {
@@ -30,6 +32,8 @@ export function PrerenderHome(): React.ReactElement {
         <p>{DEFAULTS.HERO_INTRO}</p>
         <p>{DEFAULTS.HERO_CREDENTIAL}</p>
         <p>{DEFAULTS.HERO_CLOSING}</p>
+        <p>{DEFAULTS.LOCAL_SEO_ZH}</p>
+        <p>{DEFAULTS.LOCAL_SEO_EN}</p>
       </header>
 
       <main>
@@ -80,6 +84,23 @@ export function PrerenderHome(): React.ReactElement {
           <p>{WELLNESS_SECTION.tagline}</p>
           <p>{WELLNESS_SECTION.intro}</p>
           <p>{WELLNESS_SECTION.disclaimer}</p>
+        </section>
+
+        <section aria-label="常见问题">
+          <h2>
+            {FAQ_SECTION.title} / {FAQ_SECTION.titleEn}
+          </h2>
+          <p>{FAQ_SECTION.intro}</p>
+          {FAQ_SEED.map((item) => (
+            <article key={item.id}>
+              <h3>
+                {item.questionZh}
+                {item.questionEn ? ` / ${item.questionEn}` : ''}
+              </h3>
+              <p>{plainText(item.answerZh)}</p>
+              {item.answerEn ? <p>{plainText(item.answerEn)}</p> : null}
+            </article>
+          ))}
         </section>
 
         <section aria-label="联系与预约">

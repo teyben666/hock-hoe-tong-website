@@ -14,6 +14,7 @@ export type AdminTab =
   | 'schedule'
   | 'queue'
   | 'wellness'
+  | 'faq'
   | 'gallery'
   | 'treatments';
 

@@ -14,6 +14,7 @@ import { DEFAULTS } from '../data';
 import { useTreatments } from '../hooks/useTreatments';
 import { AdminSchedulePanel } from './AdminSchedulePanel';
 import { AdminWellnessPanel } from './AdminWellnessPanel';
+import { AdminFaqPanel } from './AdminFaqPanel';
 import { AdminAboutGalleryPanel } from './AdminAboutGalleryPanel';
 import { AdminTreatmentsPanel } from './AdminTreatmentsPanel';
 import { AdminQueuePanel } from './AdminQueuePanel';
@@ -43,6 +44,7 @@ import {
   Leaf,
   Images,
   Stethoscope,
+  HelpCircle,
 } from 'lucide-react';
 
 const emptyPhoneIdentity: PatientIdentityValues = {
@@ -58,7 +60,8 @@ const ADMIN_NAV: { id: AdminTab; label: string; Icon: typeof LayoutList }[] = [
   { id: 'queue', label: '叫号', Icon: Megaphone },
   { id: 'phone', label: '代约', Icon: Phone },
   { id: 'schedule', label: '休息', Icon: CalendarOff },
-  { id: 'wellness', label: '养生', Icon: Leaf },
+  { id: 'wellness', label: '知识库', Icon: Leaf },
+  { id: 'faq', label: 'FAQ', Icon: HelpCircle },
   { id: 'gallery', label: '相册', Icon: Images },
   { id: 'treatments', label: '项目', Icon: Stethoscope },
 ];
@@ -473,6 +476,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         )}
 
         {tab === 'wellness' && <AdminWellnessPanel onMessage={setMessage} />}
+        {tab === 'faq' && <AdminFaqPanel onMessage={setMessage} />}
         {tab === 'gallery' && <AdminAboutGalleryPanel onMessage={setMessage} />}
         {tab === 'treatments' && <AdminTreatmentsPanel onMessage={setMessage} />}
         </main>

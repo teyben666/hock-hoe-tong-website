@@ -39,6 +39,12 @@ import {
   updateWellnessTip,
   deleteWellnessTip,
 } from './wellnessTips.js';
+import {
+  getAllFaqs,
+  createFaqItem,
+  updateFaqItem,
+  deleteFaqItem,
+} from './faq.js';
 import { saveMediaDataUrl, type UploadFolder } from './wellnessUpload.js';
 import {
   getAllAboutGallery,
@@ -211,6 +217,38 @@ adminRouter.put('/wellness/:id', requireStaff, (req, res) => {
 
 adminRouter.delete('/wellness/:id', requireStaff, (req, res) => {
   const ok = deleteWellnessTip(req.params.id);
+  if (!ok) return res.status(404).json({ error: '条目不存在' });
+  res.json({ success: true });
+});
+
+/** 常见问题 FAQ */
+adminRouter.get('/faq', requireStaff, (_req, res) => {
+  res.json({ items: getAllFaqs() });
+});
+
+adminRouter.post('/faq', requireStaff, (req, res) => {
+  try {
+    const item = createFaqItem(req.body || {});
+    res.status(201).json({ success: true, item });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : '保存失败';
+    res.status(400).json({ error: msg });
+  }
+});
+
+adminRouter.put('/faq/:id', requireStaff, (req, res) => {
+  try {
+    const item = updateFaqItem(req.params.id, req.body || {});
+    if (!item) return res.status(404).json({ error: '条目不存在' });
+    res.json({ success: true, item });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : '保存失败';
+    res.status(400).json({ error: msg });
+  }
+});
+
+adminRouter.delete('/faq/:id', requireStaff, (req, res) => {
+  const ok = deleteFaqItem(req.params.id);
   if (!ok) return res.status(404).json({ error: '条目不存在' });
   res.json({ success: true });
 });

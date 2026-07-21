@@ -29,6 +29,10 @@ export const DEFAULTS = {
     '34，Jalan Beladau 8，Taman Puteri Wangsa，81800，Ulu Tiram，Johor.',
   FOOTER_TAGLINE_1: '草木有情 • 岐黄有道',
   FOOTER_TAGLINE_2: '药材甄选 · 中医调养 · 健康相伴',
+  /** 本地 SEO：品牌 + 地点（福和堂 JB / Hock Hoe Tong JB） */
+  LOCAL_SEO_ZH: '福和堂（HOCK HOE TONG）位于新山（JB）Ulu Tiram，提供中医就诊预约与药材零售。',
+  LOCAL_SEO_EN:
+    'Hock Hoe Tong — TCM clinic & Chinese herbal shop in JB (Johor Bahru), Ulu Tiram, Taman Puteri Wangsa.',
   MAPS_URL: 'https://maps.app.goo.gl/BbVV67mhZ5VtWDiS6',
   SLOGAN: '福泽苍生，和调阴阳',
   HERO_MOTTO: '承岐黄之道 • 济苍生之需',
@@ -504,3 +508,68 @@ export const WELLNESS_SECTION = {
     '以下内容仅供科普参考，不替代医师诊断与治疗；任何治疗方案需经面诊后个体化制定。',
   disclaimer: '体质有别，若有不适或症状持续，请预约面诊辨证调理。',
 } as const;
+
+export const FAQ_SECTION = {
+  tagline: '预约 · 时间 · 就诊须知',
+  title: '常见问题',
+  titleEn: 'FAQ',
+  intro: '以下为常见咨询，如有其他疑问欢迎电话 / WhatsApp 联系我们。',
+} as const;
+
+/** 构建时 SEO 预渲染 / FAQPage JSON-LD 用（与 server/faq.ts 种子保持一致；线上以 API 为准） */
+export const FAQ_SEED = [
+  {
+    id: 'faq1',
+    questionZh: '如何预约就诊？',
+    questionEn: 'How do I book an appointment?',
+    answerZh:
+      '可通过官网在线预约（每 20 分钟 1 人），或拨打 / WhatsApp 013-6268626 电话预约。长辈可直接电话，由店员代为登记。',
+    answerEn:
+      'Book online (one patient every 20 minutes), or call / WhatsApp 013-6268626. Seniors may phone us and our staff will register the appointment.',
+  },
+  {
+    id: 'faq2',
+    questionZh: '营业时间与门诊时间？',
+    questionEn: 'What are your opening hours?',
+    answerZh:
+      '中药店营业时间 9:30am–7:30pm；中医门诊时间 10:00am–7:30pm。以当日可约时段为准。',
+    answerEn:
+      'Chinese medicine shop: 9:30am–7:30pm. TCM consultation: 10:00am–7:30pm. Available slots for the day take priority.',
+  },
+  {
+    id: 'faq3',
+    questionZh: '休息日是哪天？',
+    questionEn: 'When are you closed?',
+    answerZh:
+      '每两周的周三与周四休息。具体休息日以官网预约日历与店内公告为准。',
+    answerEn:
+      'Closed every other Wednesday & Thursday. Check the booking calendar or in-store notices.',
+  },
+  {
+    id: 'faq4',
+    questionZh: '可以现场取号吗？',
+    questionEn: 'Can I walk in without an appointment?',
+    answerZh:
+      '可以。现场可取 W 号排队，预约患者为 A 号。可用手机打开官网「现场取号 / 查号」页面，或店内扫码。',
+    answerEn:
+      'Yes. Walk-in tickets use W numbers; appointments use A. Open the walk-in / queue page on your phone, or scan the in-store QR.',
+  },
+  {
+    id: 'faq5',
+    questionZh: '医馆在哪里？',
+    questionEn: 'Where is the clinic?',
+    answerZh:
+      '福和堂（HOCK HOE TONG）位于新山（JB）Ulu Tiram：34, Jalan Beladau 8, Taman Puteri Wangsa, 81800, Ulu Tiram, Johor. 可于 Google Maps 搜索「福和堂 JB」或「Hock Hoe Tong JB」。',
+    answerEn:
+      'Hock Hoe Tong is in JB (Johor Bahru), Ulu Tiram: 34, Jalan Beladau 8, Taman Puteri Wangsa, 81800. Search “Hock Hoe Tong JB” or “福和堂 JB” on Google Maps.',
+  },
+  {
+    id: 'faq6',
+    questionZh: '如何取消或改期？',
+    questionEn: 'How do I cancel or reschedule?',
+    answerZh:
+      '在官网「预约查询 / 改期」输入预约手机号即可查询与取消；改期也可直接电话 / WhatsApp 联系我们。',
+    answerEn:
+      'Use “View / Reschedule Appointment” on the website with your booking mobile number. You may also call / WhatsApp us to reschedule.',
+  },
+] as const;

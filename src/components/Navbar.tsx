@@ -17,6 +17,7 @@ const NAV_LINKS = [
   { id: 'doctors', zh: '医师介绍', en: 'TCM Practitioner Profile' },
   { id: 'treatments', zh: '治疗项目', en: 'Treatment Services' },
   { id: 'feedback', zh: '中医知识库', en: 'TCM Knowledge Base' },
+  { id: 'faq', zh: '常见问题', en: 'FAQ' },
 ] as const;
 
 const navLinkClass =

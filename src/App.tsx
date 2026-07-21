@@ -11,6 +11,7 @@ import { AboutSection } from './components/AboutSection';
 import { TreatmentsPanel } from './components/TreatmentsPanel';
 import { PhysicianSection } from './components/PhysicianSection';
 import { WellnessSection } from './components/WellnessSection';
+import { FaqSection } from './components/FaqSection';
 import { BookingForm } from './components/BookingForm';
 import { BookingQuery } from './components/BookingQuery';
 import { QueueCheck } from './components/QueueCheck';
@@ -122,6 +123,9 @@ export default function App() {
 
             {/* 3.4 中医知识库轮播 */}
             <WellnessSection />
+
+            {/* 3.5 常见问题 FAQ */}
+            <FaqSection />
           </div>
 
           {/* RIGHT COLUMN: BOOKING CONTROLLER & PHONE LINK CARDS (5 of 12 columns) */}
@@ -219,6 +223,10 @@ export default function App() {
             </p>
             <p className="font-sans text-stone-500 text-xs leading-relaxed max-w-sm">
               {DEFAULTS.FOOTER_TAGLINE_2}
+            </p>
+            <p className="font-sans text-stone-500 text-[11px] leading-relaxed max-w-sm">
+              {DEFAULTS.LOCAL_SEO_ZH}
+              <span className="block text-stone-600 mt-0.5">{DEFAULTS.LOCAL_SEO_EN}</span>
             </p>
             <div className="pt-2">
               <span className="font-serif text-gold block">诊前免责与合规提示：</span>

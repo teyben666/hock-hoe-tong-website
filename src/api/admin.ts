@@ -12,6 +12,7 @@ import {
   WellnessTip,
   Treatment,
   AboutGalleryItem,
+  FaqItem,
   AdminSummary,
   AdminTrendRange,
   AdminTrendPayload,
@@ -213,6 +214,36 @@ export async function staffUpdateWellnessTip(
 
 export async function staffDeleteWellnessTip(id: string): Promise<void> {
   await adminRequest(`/wellness/${id}`, { method: 'DELETE' });
+}
+
+export async function staffFetchFaqs(): Promise<FaqItem[]> {
+  const data = await adminRequest<{ items: FaqItem[] }>('/faq');
+  return data.items;
+}
+
+export async function staffCreateFaq(
+  payload: Omit<FaqItem, 'createdAt' | 'updatedAt'>
+): Promise<FaqItem> {
+  const data = await adminRequest<{ item: FaqItem }>('/faq', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+  return data.item;
+}
+
+export async function staffUpdateFaq(
+  id: string,
+  payload: Partial<FaqItem>
+): Promise<FaqItem> {
+  const data = await adminRequest<{ item: FaqItem }>(`/faq/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  });
+  return data.item;
+}
+
+export async function staffDeleteFaq(id: string): Promise<void> {
+  await adminRequest(`/faq/${id}`, { method: 'DELETE' });
 }
 
 export async function staffUploadWellnessMedia(

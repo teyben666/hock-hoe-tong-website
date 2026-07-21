@@ -183,6 +183,18 @@ export interface WellnessTip {
   updatedAt?: string;
 }
 
+export interface FaqItem {
+  id: string;
+  questionZh: string;
+  questionEn: string;
+  answerZh: string;
+  answerEn: string;
+  sortOrder: number;
+  enabled: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface TimeSlot {
   time: string;
   booked: boolean;
