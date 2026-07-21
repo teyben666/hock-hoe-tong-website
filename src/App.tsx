@@ -40,15 +40,10 @@ export default function App() {
 
   const handleSelectDoctor = (id: string) => {
     setSelectedDoctorId(id);
-    document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   const handleSelectTreatment = (id: string) => {
     setSelectedTreatmentId(id);
-    const element = document.getElementById('booking');
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
   };
 
   const handleBookingSuccess = (reservation: Reservation) => {
